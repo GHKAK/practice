@@ -47,5 +47,18 @@ namespace TestProject1 {
                 Assert.AreEqual(expected, TypeCheck.IsCompositeNumber(number));
             }
         }
+        [TestFixture]
+        public class InputParserTest {
+
+        }
+        [TestFixture]
+        public class NumberChecker {
+            string odd = "нечетное";
+            string even = "четное";
+            string prime = "простое";
+            string composite = "составное";
+            [TestCase(false, 1)]
+
+        }
     }
 }
