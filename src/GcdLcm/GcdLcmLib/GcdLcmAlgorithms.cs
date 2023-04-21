@@ -14,6 +14,8 @@
             return x;
         }
         public static int CalculateLcm(int x, int y) {
+            x = Math.Abs(x);
+            y = Math.Abs(y);
             if(x == 0 || y == 0) return 0;
 
             return (x * y) / CalculateGcd(x, y);
