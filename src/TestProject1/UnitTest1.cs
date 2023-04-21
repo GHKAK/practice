@@ -1,8 +1,17 @@
 
+using NumTypeConsole;
+
 namespace TestProject1 {
     public class Tests {
+
         [SetUp]
         public void Setup() {
+            List<string> oddPrime = new List<string>() { "Odd", "Prime" };
+            List<string> evenPrime = new List<string>() { "Even", "Prime" };
+            List<string> evenComposite = new List<string>() { "Even", "Composite" };
+            List<string> oddComposite = new List<string>() { "Odd", "Composite" };
+            List<string> odd = new List<string>() { "Odd" };
+            List<string> even = new List<string>() { "Even" };
         }
 
         [Test]
@@ -49,16 +58,45 @@ namespace TestProject1 {
         }
         [TestFixture]
         public class InputParserTest {
+            NumberChecker numberChecker = new NumberChecker();
+            [TestCase("")]
+            [TestCase("3124mgds")]
+            [TestCase("542/hsf")]
+            [TestCase("546/7")]
+            [TestCase("546.7")]
+            [TestCase("546,7")]
+            [TestCase("546,")]
+            [TestCase("546.")]
+            [TestCase(".")]
+            [TestCase(",")]
+            [TestCase("asgahf")]
+            public void TestNumberThrow(string number) {
+                Assert.Throws<ArgumentException>(() => InputParser.ParseToInt(number));
+            }
+            [TestCase("214",214)]
+            [TestCase("0",0)]
+            [TestCase("-3124",-3124)]
+            [TestCase("+4325",4325)]
 
+            public void TestNumberEpxected(string number, int expected) {
+                Assert.IsTrue(InputParser.ParseToInt(number) == expected);
+            }
         }
         [TestFixture]
-        public class NumberChecker {
-            string odd = "нечетное";
-            string even = "четное";
-            string prime = "простое";
-            string composite = "составное";
-            [TestCase(false, 1)]
+        public class NumberCheckerTest {
+            NumberChecker numberChecker = new NumberChecker();
+            [TestCase(1, "Odd")]
+            [TestCase(2, "Even", "Prime")]
+            [TestCase(7, "Odd", "Prime")]
 
+            [TestCase(-15641, "Odd")]
+            [TestCase(-15642, "Even")]
+            [TestCase(Int32.MaxValue, "Odd", "Prime")]
+            [TestCase(Int32.MaxValue - 1, "Even", "Composite")]
+
+            public void TestNumber(int number, params string[] expected) {
+                Assert.IsTrue(Enumerable.SequenceEqual(numberChecker.GetInfo(number), expected));
+            }
         }
     }
 }

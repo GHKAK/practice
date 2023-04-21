@@ -3,15 +3,13 @@ namespace NumTypeConsole {
     class Program {
         static void Main(string[] args) {
             NumberChecker numberChecker = new NumberChecker();
+            Controller controller = new Controller(numberChecker);
             while(true) {
-                int number;
                 try {
-                    number = InputParser.ParseToInt(Console.ReadLine());
+                    controller.NumberCheck();
                 } catch(ArgumentException) {
-                    Console.WriteLine("Введите Целое число");
                     continue;
                 }
-                Console.WriteLine(String.Join(" ", numberChecker.GetInfo(number)));
             }
         }
     }
