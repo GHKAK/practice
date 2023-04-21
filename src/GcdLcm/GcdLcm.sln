@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GcdLcm", "GcdLcm\GcdLcm.csproj", "{8013DB13-C394-4A6A-8CB8-286FAC7C7266}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GcdLcm", "GcdLcm\GcdLcm.csproj", "{8013DB13-C394-4A6A-8CB8-286FAC7C7266}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GcdLcmLib", "GcdLcmLib\GcdLcmLib.csproj", "{23908925-4CDE-41BD-8C8F-7482AC19B886}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GcdLcmTests", "GcdLcmTests\GcdLcmTests.csproj", "{06BE9E88-7488-47AC-B71E-2B8CAF8D7E45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{8013DB13-C394-4A6A-8CB8-286FAC7C7266}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8013DB13-C394-4A6A-8CB8-286FAC7C7266}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8013DB13-C394-4A6A-8CB8-286FAC7C7266}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23908925-4CDE-41BD-8C8F-7482AC19B886}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23908925-4CDE-41BD-8C8F-7482AC19B886}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23908925-4CDE-41BD-8C8F-7482AC19B886}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23908925-4CDE-41BD-8C8F-7482AC19B886}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06BE9E88-7488-47AC-B71E-2B8CAF8D7E45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06BE9E88-7488-47AC-B71E-2B8CAF8D7E45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06BE9E88-7488-47AC-B71E-2B8CAF8D7E45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06BE9E88-7488-47AC-B71E-2B8CAF8D7E45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
