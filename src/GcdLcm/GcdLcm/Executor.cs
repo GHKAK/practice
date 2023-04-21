@@ -1,13 +1,5 @@
 ﻿namespace GcdLcm{
     internal class Executor {
-        GcdLcmFinder _gcdLcmFinder;
-
-        public Executor() {
-        }
-
-        internal Executor(GcdLcmFinder gcdLcmFinder) {
-            _gcdLcmFinder = gcdLcmFinder;
-        }
         static void GetNumber(out int number) {
             while(true) {
                 try {
