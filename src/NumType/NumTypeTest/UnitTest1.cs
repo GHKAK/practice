@@ -57,6 +57,21 @@ namespace TestProject1 {
             }
         }
         [TestFixture]
+        public class ConsoleInputTest {
+            [TestCase("1", 1)]
+            [TestCase("-5", -5)]
+            [TestCase("0", 0)]
+            [TestCase("+4", 4)]
+            public void GetNumberTest(string input, int expected) {
+                int result;
+                using(StringReader stringReader = new StringReader(input)) {
+                    Console.SetIn(stringReader);
+                    result=ConsoleInput.GetNumber();
+                }
+                Assert.AreEqual(expected, result);
+            }
+        }
+        [TestFixture]
         public class InputParserTest {
             NumberChecker numberChecker = new NumberChecker();
             [TestCase("")]
@@ -73,10 +88,10 @@ namespace TestProject1 {
             public void TestNumberThrow(string number) {
                 Assert.Throws<ArgumentException>(() => InputParser.ParseToInt(number));
             }
-            [TestCase("214",214)]
-            [TestCase("0",0)]
-            [TestCase("-3124",-3124)]
-            [TestCase("+4325",4325)]
+            [TestCase("214", 214)]
+            [TestCase("0", 0)]
+            [TestCase("-3124", -3124)]
+            [TestCase("+4325", 4325)]
 
             public void TestNumberEpxected(string number, int expected) {
                 Assert.IsTrue(InputParser.ParseToInt(number) == expected);

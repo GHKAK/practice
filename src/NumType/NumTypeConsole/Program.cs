@@ -6,7 +6,6 @@ namespace NumTypeConsole {
             Executor executor = new Executor(numberChecker);
             while(true) {
                 executor.Execute();
-
             }
         }
     }

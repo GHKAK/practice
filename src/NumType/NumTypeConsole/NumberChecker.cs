@@ -1,11 +1,5 @@
 ﻿using NumCheckLib;
 namespace NumTypeConsole {
-    public enum NumberTypes{
-        Odd,
-        Even,
-        Prime,
-        Composite
-    }
     internal class NumberChecker {
         internal List<string> GetInfo(int number) {
             List<string> result = new List<string>();
