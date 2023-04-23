@@ -5,9 +5,8 @@
             if(Int32.TryParse(input, out number)) {
                 return number;
             } else {
-                throw new ArgumentException();
+                throw new ArgumentException("Wrong format");
             }
         }
     }
 }
-
