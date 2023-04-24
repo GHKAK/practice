@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PalindromeSequence {
+﻿namespace PalindromeSequence {
     public class InputParser {
         public static int ParseToInt(string input) {
             int number;

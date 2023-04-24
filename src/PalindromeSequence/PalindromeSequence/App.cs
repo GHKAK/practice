@@ -1,5 +1,4 @@
 ﻿using PalindromeSequence;
-
 class App {
     static List<int> FindPalindromes(int end) {
 
@@ -29,5 +28,4 @@ class App {
             Console.WriteLine($"Palindromes in range [0,{n}]:  {String.Join(" ", FindPalindromes(n))}");
         }
     }
-
 }
