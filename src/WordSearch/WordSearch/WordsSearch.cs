@@ -10,5 +10,5 @@ while(true) {
     }
     Console.WriteLine("Enter text:");
     string input = Console.ReadLine();
-    Console.WriteLine($"     {input.AllMatchesCount(word)} Matches Is Found.");
+    Console.WriteLine($"     {input.AllMatchesCountIndex(word)} Matches Is Found.");
 }
