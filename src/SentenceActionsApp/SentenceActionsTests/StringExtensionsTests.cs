@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SentenceActionsApp;
 
 namespace SentenceActionsTests {
