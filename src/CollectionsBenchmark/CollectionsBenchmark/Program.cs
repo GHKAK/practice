@@ -14,3 +14,6 @@
 //Hashtable	Represents a collection of key/value pairs that are organized based on the hash code of the key.
 //Queue	Represents a first in, first out (FIFO) collection of objects.
 //Stack	Represents a last in, first out (LIFO) collection of objects.
+using BenchmarkDotNet.Running;
+using CollectionsBenchmark;
+var summary = BenchmarkRunner.Run<AddingBencmark>();
