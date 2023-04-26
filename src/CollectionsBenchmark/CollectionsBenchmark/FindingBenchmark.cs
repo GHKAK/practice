@@ -49,5 +49,18 @@ namespace CollectionsBenchmark {
                 _sortedList.IndexOfKey(TEST_LENGTH - 2);
             }
         }
+        public void SortedListGenericIndexOfValue() {
+            _sortedListGeneric = new SortedList<long, long>();
+            for(long i = 0; i < TEST_LENGTH; i++) {
+                _sortedListGeneric.IndexOfValue(TEST_LENGTH - 2);
+            }
+        }
+        [Benchmark]
+        public void SortedListIndexOfValue() {
+            _sortedList = new SortedList();
+            for(long i = 0; i < TEST_LENGTH; i++) {
+                _sortedList.IndexOfValue(TEST_LENGTH - 2);
+            }
+        }
     }
 }

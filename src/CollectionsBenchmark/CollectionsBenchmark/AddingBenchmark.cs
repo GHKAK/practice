@@ -8,11 +8,15 @@ namespace CollectionsBenchmark {
         private List<long> _list;
         private ArrayList _arrayList;
 
+        private Dictionary<long, long> _dictionary;
+        private Hashtable _hashTable;
+        
         private LinkedList<long> _linkedList;
 
         private Queue<long> _queueGeneric;
         private Queue _queue;
 
+        private SortedDictionary<long, long> _sortedDictionary;
         private SortedList<long, long> _sortedListGeneric;
         private SortedList _sortedList;
 
@@ -21,11 +25,15 @@ namespace CollectionsBenchmark {
 
         private HashSet<long> _hashSetGeneric;
 
-        private Hashtable _hashTable;
 
         public void DoActionLengthTimes(Action action) {
             for (int i = 0; i < TEST_LENGTH; i++) {
                 action();
+            }
+        }
+        public void DoActionLengthTimes(Action<long,long> action) {
+            for(int i = 0; i < TEST_LENGTH; i++) {
+                action(i,i);
             }
         }
         [Benchmark]
@@ -37,6 +45,16 @@ namespace CollectionsBenchmark {
         public void ArrayListAdd() {
             _arrayList = new ArrayList();
             DoActionLengthTimes(() => _arrayList.Add(0));
+        }
+        [Benchmark]
+        public void DictionaryAdd() {
+            _dictionary = new Dictionary<long, long>();
+            DoActionLengthTimes((long key, long value) => _dictionary.Add(key,value));
+        }
+        [Benchmark]
+        public void HashTableAdd() {
+            _hashTable = new Hashtable();
+            DoActionLengthTimes((long key, long value) => _hashTable.Add(key, value));
         }
         [Benchmark]
         public void LinkedListAddLast() {
@@ -54,18 +72,20 @@ namespace CollectionsBenchmark {
             DoActionLengthTimes(() => _queue.Enqueue(0));
         }
         [Benchmark]
+        public void SortedDictionaryGenericAdd() {
+            _sortedDictionary = new SortedDictionary<long, long>();
+            DoActionLengthTimes((long key, long value) => _sortedDictionary.Add(key, value));
+        }
+        [Benchmark]
         public void SortedListGenericAdd() {
             _sortedListGeneric = new SortedList<long, long>();
-            for (long i = 0; i < TEST_LENGTH; i++) {
-                _sortedListGeneric.Add(i, i);
-            }
+            DoActionLengthTimes((long key, long value) => _sortedListGeneric.Add(key, value));
         }
         [Benchmark]
         public void SortedListAdd() {
             _sortedList = new SortedList();
-            for (long i = 0; i < TEST_LENGTH; i++) {
-                _sortedList.Add(i, i);
-            }
+            DoActionLengthTimes((long key, long value) => _sortedList.Add(key, value));
+
         }
         [Benchmark]
         public void StackGenericPush() {
@@ -81,13 +101,6 @@ namespace CollectionsBenchmark {
         public void HashSetGenericAdd() {
             _hashSetGeneric = new HashSet<long>();
             DoActionLengthTimes(() => _hashSetGeneric.Add(0));
-        }
-        [Benchmark]
-        public void HashTableAdd() {
-            _hashTable = new Hashtable();
-            for (long i = 0; i < TEST_LENGTH; i++) {
-                _hashTable.Add(i, i);
-            }
         }
     }
 }
