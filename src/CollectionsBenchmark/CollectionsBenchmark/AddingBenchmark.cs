@@ -2,7 +2,7 @@
 using System.Collections;
 namespace CollectionsBenchmark {
     [MemoryDiagnoser]
-    public class AddingBencmark {
+    public class AddingBenchmark {
         private const long TEST_LENGTH = 1000;
 
         private List<long> _list;
@@ -16,12 +16,12 @@ namespace CollectionsBenchmark {
         private SortedList<long, long> _sortedListGeneric;
         private SortedList _sortedList;
 
-        public Stack<long> _stackGeneric;
-        public Stack _stack;
+        private Stack<long> _stackGeneric;
+        private Stack _stack;
 
-        public HashSet<long> _hashSetGeneric;
+        private HashSet<long> _hashSetGeneric;
 
-        public Hashtable _hashTable;
+        private Hashtable _hashTable;
 
         public void DoActionLengthTimes(Action action) {
             for (int i = 0; i < TEST_LENGTH; i++) {
