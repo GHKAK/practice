@@ -3,44 +3,10 @@ using System.Collections;
 
 namespace CollectionsBenchmark {
     [MemoryDiagnoser]
-    public class RemovingBenchmark {
-        private const long TEST_LENGTH = 1000;
-
-        private List<long> _list;
-        private ArrayList _arrayList;
-
-        private LinkedList<long> _linkedList;
-
-        private SortedList<long, long> _sortedListGeneric;
-        private SortedList _sortedList;
-
-        private Stack<long> _stackGeneric;
-        private Stack _stack;
-
-        private HashSet<long> _hashSetGeneric;
-
-        private Hashtable _hashTable;
-        public RemovingBenchmark() {
-            _list = new List<long>();
-            _arrayList = new ArrayList();
-            _linkedList = new LinkedList<long>();
-            _sortedListGeneric = new SortedList<long, long>(); 
-            _sortedList = new SortedList(); 
-            _hashSetGeneric = new HashSet<long>(); 
-            _hashTable = new Hashtable(); 
-            for (long i = 0; i < TEST_LENGTH; i++) {
-                _list.Add(i);
-                _arrayList.Add(i);
-                _linkedList.AddLast(0);
-                _sortedListGeneric.Add(i, i);
-                _sortedList.Add(i, i);
-                _hashSetGeneric.Add(i);
-                _hashTable.Add(i, i);
-            }
-        }
-        public void DoActionLengthTimes(Action<long> action) {
-            for (int i = 0; i < TEST_LENGTH; i++) {
-                action(i);
+    public class RemovingBenchmark : MethodsBenchmark {
+        public override void DoActionLengthTimes(Action<long> action) {
+            for(int i = 0; i < TEST_LENGTH; i++) {
+                action(TEST_LENGTH);
             }
         }
         [Benchmark]

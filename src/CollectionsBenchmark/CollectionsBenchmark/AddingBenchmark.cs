@@ -2,38 +2,11 @@
 using System.Collections;
 namespace CollectionsBenchmark {
     [MemoryDiagnoser]
-    public class AddingBenchmark {
-        private const long TEST_LENGTH = 1000;
-
-        private List<long> _list;
-        private ArrayList _arrayList;
-
-        private Dictionary<long, long> _dictionary;
-        private Hashtable _hashTable;
-        
-        private LinkedList<long> _linkedList;
-
-        private Queue<long> _queueGeneric;
-        private Queue _queue;
-
-        private SortedDictionary<long, long> _sortedDictionary;
-        private SortedList<long, long> _sortedListGeneric;
-        private SortedList _sortedList;
-
-        private Stack<long> _stackGeneric;
-        private Stack _stack;
-
-        private HashSet<long> _hashSetGeneric;
-
-
-        public void DoActionLengthTimes(Action action) {
-            for (int i = 0; i < TEST_LENGTH; i++) {
-                action();
-            }
-        }
-        public void DoActionLengthTimes(Action<long,long> action) {
+    public class AddingBenchmark : MethodsBenchmark {
+        public virtual void DoActionLengthTimes(Action<long, long> action) {
             for(int i = 0; i < TEST_LENGTH; i++) {
-                action(i,i);
+                long descend = TEST_LENGTH - i;
+                action(descend, descend);
             }
         }
         [Benchmark]
@@ -49,7 +22,7 @@ namespace CollectionsBenchmark {
         [Benchmark]
         public void DictionaryAdd() {
             _dictionary = new Dictionary<long, long>();
-            DoActionLengthTimes((long key, long value) => _dictionary.Add(key,value));
+            DoActionLengthTimes((long key, long value) => _dictionary.Add(key, value));
         }
         [Benchmark]
         public void HashTableAdd() {

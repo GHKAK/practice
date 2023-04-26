@@ -5,44 +5,42 @@ using System.Collections.Generic;
 
 namespace CollectionsBenchmark {
     [MemoryDiagnoser]
-    public class InsertingBenchmark {
-        private const long TEST_LENGTH = 10;
-        private const long INSERT_COUNT = 1;
-        private const int INSERT_POS = 2;
-        private List<long> _list;
-        private ArrayList _arrayList;
-
-        private LinkedList<long> _linkedList;
-
-
-        public InsertingBenchmark() {
-            _list = new List<long>();
-            _arrayList = new ArrayList();
-            _linkedList = new LinkedList<long>();
-            for (long i = 0; i < TEST_LENGTH; i++) {
-                _list.Add(i);
-                _arrayList.Add(i);
-                _linkedList.AddLast(0);
+    [MinIterationCount(1)]
+    [WarmupCount(3)]
+    [MaxIterationCount(5)]
+    public class InsertingBenchmark : MethodsBenchmark {
+        public override void DoActionLengthTimes(Action<int, long> action) {
+            for(int i = 1000; i < TEST_LENGTH * 2; i++) {
+                action(i, i);
             }
         }
-        public void DoActionLengthTimes(Action<int, long> action) {
-            for (int i = 0; i < INSERT_COUNT; i++) {
-                action(INSERT_POS ,i);
+        public override void DoActionLengthTimes(Action<long> action) {
+            for(int i = 1000; i < TEST_LENGTH * 2; i++) {
+                long x = TEST_LENGTH * 2 - i;
+                action(i);
             }
         }
         [Benchmark]
-        [MinIterationCount(1)]
-        [WarmupCount(3)]
-        [MaxIterationCount(5)]
         public void ListInsert() {
             DoActionLengthTimes((int pos, long x) => _list.Insert(pos, x));
         }
         [Benchmark]
-        [WarmupCount(3)]
-        [MinIterationCount(1)]
-        [MaxIterationCount(5)]
         public void ArrayListInsert() {
             DoActionLengthTimes((int pos, long x) => _arrayList.Insert(pos, x));
+        }
+        [Benchmark]
+        public void DictionaryAdd() {
+            _dictionary = new Dictionary<long, long>();
+            DoActionLengthTimes((int key, long x) => _dictionary.Add(key, x));
+        }
+        [Benchmark]
+        public void SortedDictionaryAdd() {
+            _sortedDictionary = new SortedDictionary<long, long>();
+            DoActionLengthTimes((int key, long x) => _sortedDictionary.Add(key, x));
+        }
+        [Benchmark]
+        public void SortedSetAdd() {
+            DoActionLengthTimes((long x) => _sortedSet.Add(x));
         }
     }
 }
