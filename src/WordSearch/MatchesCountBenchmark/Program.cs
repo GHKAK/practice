@@ -3,6 +3,7 @@ using BenchmarkDotNet.Running;
 using System.Text;
 using WordSearch;
 namespace MatchesCountBenchmark {
+    [MemoryDiagnoser]
     public class IndexVsRegex {
         private const string sentence = "All happy families are alike; each unhappy family is unhappy in its own way. ";
         StringBuilder sb = new StringBuilder();
