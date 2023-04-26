@@ -4,6 +4,7 @@ namespace CollectionsBenchmark {
     [MemoryDiagnoser]
     public class AddingBencmark {
         private const long TEST_LENGTH = 1000;
+
         private List<long> _list;
         private ArrayList _arrayList;
 
@@ -11,7 +12,6 @@ namespace CollectionsBenchmark {
 
         private Queue<long> _queueGeneric;
         private Queue _queue;
-
 
         private SortedList<long, long> _sortedListGeneric;
         private SortedList _sortedList;
@@ -31,39 +31,27 @@ namespace CollectionsBenchmark {
         [Benchmark]
         public void ListAdd() {
             _list = new List<long>();
-            //DoActionLengthTimes(() => _list.Add(0));
+            DoActionLengthTimes(() => _list.Add(0));
         }
         [Benchmark]
         public void ArrayListAdd() {
             _arrayList = new ArrayList();
-            //DoActionLengthTimes(() => _arrayList.Add(0));
-
-            for (long i = 0; i < TEST_LENGTH; i++) {
-                _arrayList.Add(i);
-            }
+            DoActionLengthTimes(() => _arrayList.Add(0));
         }
         [Benchmark]
         public void LinkedListAddLast() {
             _linkedList = new LinkedList<long>();
-            //DoActionLengthTimes(() => _linkedList.AddLast(0));
-
-            for (long i = 0; i < TEST_LENGTH; i++) {
-                _linkedList.AddLast(i);
-            }
+            DoActionLengthTimes(() => _linkedList.AddLast(0));
         }
         [Benchmark]
         public void QueueGenericEnqueue() {
             _queueGeneric = new Queue<long>();
-            for (long i = 0; i < TEST_LENGTH; i++) {
-                _queueGeneric.Enqueue(i);
-            }
+            DoActionLengthTimes(() => _queueGeneric.Enqueue(0));
         }
         [Benchmark]
         public void QueueEnqueue() {
             _queue = new Queue();
-            for (long i = 0; i < TEST_LENGTH; i++) {
-                _queue.Enqueue(i);
-            }
+            DoActionLengthTimes(() => _queue.Enqueue(0));
         }
         [Benchmark]
         public void SortedListGenericAdd() {
@@ -82,26 +70,20 @@ namespace CollectionsBenchmark {
         [Benchmark]
         public void StackGenericPush() {
             _stackGeneric = new Stack<long>();
-            for (long i = 0; i < TEST_LENGTH; i++) {
-                _stackGeneric.Push(i);
-            }
+            DoActionLengthTimes(() => _stackGeneric.Push(0));
         }
         [Benchmark]
         public void StackPush() {
             _stack = new Stack();
-            for (long i = 0; i < TEST_LENGTH; i++) {
-                _stackGeneric.Push(i);
-            }
+            DoActionLengthTimes(() => _stack.Push(0));
         }
         [Benchmark]
-        public void HashSetGeneric() {
+        public void HashSetGenericAdd() {
             _hashSetGeneric = new HashSet<long>();
-            for (long i = 0; i < TEST_LENGTH; i++) {
-                _hashSetGeneric.Add(i);
-            }
+            DoActionLengthTimes(() => _hashSetGeneric.Add(0));
         }
         [Benchmark]
-        public void HashTable() {
+        public void HashTableAdd() {
             _hashTable = new Hashtable();
             for (long i = 0; i < TEST_LENGTH; i++) {
                 _hashTable.Add(i, i);
