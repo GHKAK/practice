@@ -1,6 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using System.Collections;
-using System.Collections.Generic;
 
 
 namespace CollectionsBenchmark {
@@ -13,7 +11,7 @@ namespace CollectionsBenchmark {
         }
         [Benchmark]
         public void ArrayListSort() {
-           _arrayList.Sort();
+            _arrayList.Sort();
         }
     }
 }

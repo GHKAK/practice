@@ -1,7 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Engines;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace CollectionsBenchmark {
     [MemoryDiagnoser]

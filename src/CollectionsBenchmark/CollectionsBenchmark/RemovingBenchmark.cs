@@ -1,11 +1,10 @@
 ﻿using BenchmarkDotNet.Attributes;
-using System.Collections;
 
 namespace CollectionsBenchmark {
     [MemoryDiagnoser]
     public class RemovingBenchmark : MethodsBenchmark {
         public override void DoActionLengthTimes(Action<long> action) {
-            for(int i = 0; i < TEST_LENGTH; i++) {
+            for (int i = 0; i < TEST_LENGTH; i++) {
                 action(TEST_LENGTH);
             }
         }

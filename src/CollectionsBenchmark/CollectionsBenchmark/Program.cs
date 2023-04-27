@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Running;
 using CollectionsBenchmark;
+BenchmarkRunner.Run<CloningBenchmark>();
 BenchmarkRunner.Run<AddingBenchmark>();
 BenchmarkRunner.Run<RemovingBenchmark>();
 BenchmarkRunner.Run<FindingBenchmark>();

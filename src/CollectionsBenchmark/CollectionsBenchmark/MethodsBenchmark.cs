@@ -1,10 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CollectionsBenchmark {
     public class MethodsBenchmark {
@@ -65,7 +60,7 @@ namespace CollectionsBenchmark {
                 _sortedDictionary.Add(elem, elem);
                 _sortedListGeneric.Add(elem, elem);
                 _sortedList.Add(elem, elem);
-
+                _sortedSet.Add(i);
                 _queueGeneric.Enqueue(elem);
                 _queue.Enqueue(elem);
 

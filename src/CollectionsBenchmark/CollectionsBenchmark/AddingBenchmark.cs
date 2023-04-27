@@ -1,10 +1,11 @@
 ﻿using BenchmarkDotNet.Attributes;
 using System.Collections;
+
 namespace CollectionsBenchmark {
     [MemoryDiagnoser]
     public class AddingBenchmark : MethodsBenchmark {
         public virtual void DoActionLengthTimes(Action<long, long> action) {
-            for(int i = 0; i < TEST_LENGTH; i++) {
+            for (int i = 0; i < TEST_LENGTH; i++) {
                 long descend = TEST_LENGTH - i;
                 action(descend, descend);
             }
@@ -73,7 +74,7 @@ namespace CollectionsBenchmark {
         [Benchmark]
         public void HashSetGenericAdd() {
             _hashSetGeneric = new HashSet<long>();
-            DoActionLengthTimes(() => _hashSetGeneric.Add(0));
+            DoActionLengthTimes((long i) => _hashSetGeneric.Add(i));
         }
     }
 }
