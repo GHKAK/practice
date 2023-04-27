@@ -25,7 +25,7 @@ namespace CollectionsBenchmark {
         private protected Stack<long> _stackGeneric;
         private protected Stack _stack;
 
-        private protected HashSet<long> _hashSetGeneric;
+        private protected HashSet<long> _hashSet;
         [GlobalSetup]
         public void Setup() {
             _list = new List<long>();
@@ -47,7 +47,7 @@ namespace CollectionsBenchmark {
             _stackGeneric = new Stack<long>();
             _stack = new Stack();
 
-            _hashSetGeneric = new HashSet<long>();
+            _hashSet = new HashSet<long>();
             for(long i = 0; i < TEST_LENGTH; i++) {
                 long elem = i;
                 _list.Add(elem);
@@ -67,7 +67,7 @@ namespace CollectionsBenchmark {
                 _stackGeneric.Push(elem);
                 _stack.Push(elem);
 
-                _hashSetGeneric.Add(elem);
+                _hashSet.Add(elem);
             }
         }
         public virtual void DoActionLengthTimes(Action action) {

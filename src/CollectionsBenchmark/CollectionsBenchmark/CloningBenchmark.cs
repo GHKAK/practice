@@ -1,10 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CollectionsBenchmark {
     [MemoryDiagnoser]
@@ -63,7 +58,7 @@ namespace CollectionsBenchmark {
         }
         [Benchmark]
         public void HasSetClone() {
-            HashSet<long> newCollection = new HashSet<long>(_hashSetGeneric);
+            HashSet<long> newCollection = new HashSet<long>(_hashSet);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace CollectionsBenchmark {
         }
         [Benchmark]
         public void HashSetGenericRemove() {
-            DoActionLengthTimes((long x) => _hashSetGeneric.Remove(x));
+            DoActionLengthTimes((long x) => _hashSet.Remove(x));
         }
         [Benchmark]
         public void HashTableRemove() {

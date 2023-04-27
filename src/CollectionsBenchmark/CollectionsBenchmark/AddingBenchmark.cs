@@ -16,6 +16,14 @@ namespace CollectionsBenchmark {
             DoActionLengthTimes(() => _list.Add(0));
         }
         [Benchmark]
+        public void ListAdd1() {
+            //_list = new List<long>();
+            DoActionLengthTimes(() => { 
+                var l = new List<long>();
+                l.Add(0);
+            });
+        }
+        [Benchmark]
         public void ArrayListAdd() {
             _arrayList = new ArrayList();
             DoActionLengthTimes(() => _arrayList.Add(0));
@@ -73,8 +81,10 @@ namespace CollectionsBenchmark {
         }
         [Benchmark]
         public void HashSetGenericAdd() {
-            _hashSetGeneric = new HashSet<long>();
-            DoActionLengthTimes((long i) => _hashSetGeneric.Add(i));
+            _hashSet = new HashSet<long>();
+            DoActionLengthTimes((long i) => _hashSet.Add(i));
         }
     }
 }
+//HashSetDictionary
+//add not long but class x , y;
