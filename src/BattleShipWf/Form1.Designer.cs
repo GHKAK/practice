@@ -21,6 +21,8 @@
             var battleFieldModelUser = new BattleFieldModel();
             this.battleField1 = new BattleShipWf.BattleField(battleFieldModelBot);
             this.battleField2 = new BattleShipWf.BattleField(battleFieldModelUser);
+            BattleFieldBot = battleField1;
+            BattleFieldUser = battleField2;
             GameEngine gameEngine = new GameEngine(battleFieldModelUser, battleFieldModelBot);
             Controller controller = new Controller(gameEngine,this);
             // 
@@ -53,8 +55,8 @@
 
         }
 
-        private BattleField battleField1;
-        private BattleField battleField2;
+        public BattleField battleField1;
+        public BattleField battleField2;
 
         public BattleField BattleFieldBot { get; private set; }
         public BattleField BattleFieldUser { get; private set; }

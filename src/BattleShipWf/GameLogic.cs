@@ -1,5 +1,5 @@
 ﻿namespace BattleShipWf {
-    public class GameEngine { 
+    public class GameEngine {
         public Controller Controller { get; set; }
         public GameState State { get; private set; }
         private Cell[,] UserBattleFieldData { get; set; }
@@ -22,11 +22,20 @@
                 _ => throw new Exception(),
             };
         }
-        public void ResolveUserControlMouseDown() {
-
+        public void ResolveUserControlMouseDown(int row, int col, Cell[,] BattleFieldData) {
+            if (State == GameState.Prepare && BattleFieldData == UserBattleFieldData) {
+                if (BattleFieldData[row, col].State == SeaState.Ship) {
+                    BattleFieldData[row, col].State = SeaState.Empty;
+                    Controller.Repaint();
+                } else {
+                    BattleFieldData[row, col].State = SeaState.Ship;
+                    Controller.Repaint();
+                }
+            }
         }
         public void RestartGame() {
             UserBattleFieldModel = new BattleFieldModel();
+            BotBattleFieldModel = new BattleFieldModel();
             State = GameState.Prepare;
             Controller.Repaint();
         }
