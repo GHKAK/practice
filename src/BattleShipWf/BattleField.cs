@@ -13,12 +13,14 @@ namespace BattleShipWf {
     public partial class BattleField : UserControl {
         public bool IsClickable { get; set; }
         public BattleField() {
+            this.BattleFieldData = (new BattleFieldModel()).BattleFieldData;
             InitializeComponent();
         }
-        public BattleField(BattleFieldModel battleFieldModel) {
+        public BattleField(BattleFieldModel battleFieldModel){
             this.BattleFieldData = battleFieldModel.BattleFieldData;
+            InitializeComponent();
         }
-        public Cell[,] BattleFieldData { get; set; }
+        public Cell[,] BattleFieldData { get;private set; }
         protected override void OnPaint(PaintEventArgs e) {
             int cellsCount = 10;
             int gridRightBottomPadding = 10;
@@ -40,7 +42,7 @@ namespace BattleShipWf {
                 Brush redBrush = new SolidBrush(Color.Red);
                 Brush blackBrush = new SolidBrush(Color.Black);
 
-                for (int y = 0; y < BattleFieldData.GetLength(0); y++) {
+                for (int y = 0; y < this.BattleFieldData.GetLength(0); y++) {
                     for (int x = 0; x < BattleFieldData.GetLength(1); x++) {
                         Rectangle cellRect = new Rectangle(x * cellWidth + 1, y * cellHeight + 1, cellWidth - 1, cellHeight - 1);
                         switch (BattleFieldData[y, x].State) {
@@ -66,7 +68,7 @@ namespace BattleShipWf {
         }
         protected override void OnMouseDown(MouseEventArgs e) {
             base.OnMouseDown(e);
-            
+
             int cellWidth = this.Width / 10;
             int cellHeight = this.Height / 10;
             int row = e.Y / cellHeight;

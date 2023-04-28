@@ -1,18 +1,17 @@
 ﻿namespace BattleShipWf {
-    public class GameEngine {
-        private Controller Controller { get; set; }
+    public class GameEngine { 
+        public Controller Controller { get; set; }
         public GameState State { get; private set; }
         private Cell[,] UserBattleFieldData { get; set; }
         private Cell[,] BotBattleFieldData { get; set; }
         private BattleFieldModel UserBattleFieldModel { get; set; }
         private BattleFieldModel BotBattleFieldModel { get; set; }
-        public GameEngine(BattleFieldModel userBattleField, BattleFieldModel botBattleField, Controller controller) {
+        public GameEngine(BattleFieldModel userBattleField, BattleFieldModel botBattleField) {
             State = GameState.Prepare;
             UserBattleFieldData = userBattleField.BattleFieldData;
             BotBattleFieldData = botBattleField.BattleFieldData;
             UserBattleFieldModel = userBattleField;
             BotBattleFieldModel = botBattleField;
-            Controller = controller;
         }
         private void StartGame() {
             Random random = new Random();
