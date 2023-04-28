@@ -1,4 +1,6 @@
-﻿namespace BattleShipWf {
+﻿using System.Runtime.CompilerServices;
+
+namespace BattleShipWf {
     public class Controller {
         private GameEngine GameEngine { get; set; }
         private Form1 Form { get; set; }
@@ -12,18 +14,21 @@
         }
         public void Repaint() {
             if (GameEngine.State == GameState.Prepare) {
-                Form.BattleFieldUser.Repaint();
+                Form.BattleFieldUser.Repaint(true);
             } else if (GameEngine.State == GameState.PlayerMove) {
-                Form.BattleFieldUser.Repaint();
+                Form.BattleFieldUser.Repaint(true);
             } else if (GameEngine.State == GameState.BotMove) {
-                Form.BattleFieldBot.Repaint();
+                Form.BattleFieldBot.Repaint(true);
             } else if (GameEngine.State == GameState.Over) {
-                Form.BattleFieldUser.Repaint();
-                Form.BattleFieldBot.Repaint();
+                Form.BattleFieldUser.Repaint(false);
+                Form.BattleFieldBot.Repaint(false);
             }
         }
-        public void Resolve(int row,int col, BattleField battleField) {
-            GameEngine.ResolveUserControlMouseDown(row,col, battleField.BattleFieldData);
+        public void Resolve(int row, int col, BattleField battleField) {
+            GameEngine.ResolveAction(row, col, battleField.BattleFieldData);
+        }
+        public void Restart() {
+            GameEngine.RestartGame();
         }
     }
 }

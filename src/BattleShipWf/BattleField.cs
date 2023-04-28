@@ -11,24 +11,31 @@ using System.Windows.Forms;
 namespace BattleShipWf {
 
     public partial class BattleField : UserControl {
-        private int cellsCount =10;
+        private int cellsCount = 10;
         private int gridRightBottomPadding = 10;
         private int cellWidth, cellHeight;
+        private int lastCellRow, lastCellColumn;
         public bool IsClickable { get; set; }
         public Controller Controller { get; set; }
-        public Cell[,] BattleFieldData { get;private set; }
-        public BattleField() {
-            this.BattleFieldData = (new BattleFieldModel()).BattleFieldData;
-            InitializeComponent();
-        }
-        public BattleField(BattleFieldModel battleFieldModel){
+        public Cell[,] BattleFieldData { get; private set; }
+        //public BattleField() {
+        //    this.BattleFieldData = (new BattleFieldModel()).BattleFieldData;
+        //    InitializeComponent();
+        //    SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint |
+        //    ControlStyles.AllPaintingInWmPaint, true);
+        //    UpdateStyles();
+        //}
+        public BattleField(BattleFieldModel battleFieldModel) {
             this.BattleFieldData = battleFieldModel.BattleFieldData;
             InitializeComponent();
+            SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint |
+            ControlStyles.AllPaintingInWmPaint, true);
+            UpdateStyles();
         }
         protected override void OnPaint(PaintEventArgs e) {
             using (Pen pen = new Pen(Color.White)) {
-            cellWidth = (this.Width - gridRightBottomPadding / cellsCount) / cellsCount;
             cellHeight = (this.Height - gridRightBottomPadding / cellsCount) / cellsCount;
+            cellWidth = (this.Width - gridRightBottomPadding / cellsCount) / cellsCount;
                 for (int y = 0; y <= 10; y++) {
                     int yPos = y * cellHeight;
                     e.Graphics.DrawLine(pen, 0, yPos, this.Width - gridRightBottomPadding, yPos);
@@ -74,15 +81,15 @@ namespace BattleShipWf {
             base.OnMouseDown(e);
             int cellWidth = this.Width / 10;
             int cellHeight = this.Height / 10;
-            int row = e.Y / cellHeight;
-            int col = e.X / cellWidth;
-            Controller.Resolve(row,col,this);
+            lastCellRow = e.Y / cellHeight;
+            lastCellColumn = e.X / cellWidth;
+            Controller.Resolve(lastCellRow, lastCellColumn, this);
 
             //BattleFieldData[row, col].State = SeaState.Ship;
-            
+
             //Repaint();
         }
-        public void Repaint() {
+        public void Repaint(bool repaintOne) {
             this.Invalidate();
         }
     }

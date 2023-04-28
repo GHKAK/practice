@@ -22,7 +22,7 @@
                 _ => throw new Exception(),
             };
         }
-        public void ResolveUserControlMouseDown(int row, int col, Cell[,] BattleFieldData) {
+        public void ResolveAction(int row, int col, Cell[,] BattleFieldData) {
             if (State == GameState.Prepare && BattleFieldData == UserBattleFieldData) {
                 if (BattleFieldData[row, col].State == SeaState.Ship) {
                     BattleFieldData[row, col].State = SeaState.Empty;
@@ -33,9 +33,17 @@
                 }
             }
         }
+        public void RestartUserBattleField() {
+            for (int i = 0; i < UserBattleFieldData.GetLength(0); i++) {
+                for (int j = 0; j < UserBattleFieldData.GetLength(1); j++) {
+                    UserBattleFieldData[i, j].State = SeaState.Empty;
+                }
+            }
+        }
+
         public void RestartGame() {
             UserBattleFieldModel = new BattleFieldModel();
-            BotBattleFieldModel = new BattleFieldModel();
+            RestartUserBattleField();
             State = GameState.Prepare;
             Controller.Repaint();
         }
