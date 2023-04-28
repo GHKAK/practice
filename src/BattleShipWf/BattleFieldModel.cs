@@ -38,4 +38,5 @@ namespace BattleShipWf {
 //GameEngine = new GameEngine(battleFieldModelUser, battleFieldModelBot);
 //Controller = new Controller(GameEngine, this);
 //this.button1 = new System.Windows.Forms.Button();
-//this.SuspendLayout();
+//this.label1 = new System.Windows.Forms.Label();
+//this.label2 = new System.Windows.Forms.Label();

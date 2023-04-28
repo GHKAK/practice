@@ -30,5 +30,8 @@ namespace BattleShipWf {
         public void Restart() {
             GameEngine.RestartGame();
         }
+        public void Start() {
+            GameEngine.StartGame();
+        }
     }
 }

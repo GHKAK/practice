@@ -33,7 +33,7 @@ namespace BattleShipWf {
             UpdateStyles();
         }
         protected override void OnPaint(PaintEventArgs e) {
-            using (Pen pen = new Pen(Color.White)) {
+            using (Pen pen = new Pen(Color.Fuchsia)) {
             cellHeight = (this.Height - gridRightBottomPadding / cellsCount) / cellsCount;
             cellWidth = (this.Width - gridRightBottomPadding / cellsCount) / cellsCount;
                 for (int y = 0; y <= 10; y++) {
@@ -49,7 +49,7 @@ namespace BattleShipWf {
             }
         }
         private void FillAllCells(PaintEventArgs e) {
-            Brush blueBrush = new SolidBrush(Color.Blue);
+            Brush blueBrush = new SolidBrush(Color.Aqua);
             Brush grayBrush = new SolidBrush(Color.Gray);
             Brush redBrush = new SolidBrush(Color.Red);
             Brush blackBrush = new SolidBrush(Color.Black);
@@ -90,6 +90,7 @@ namespace BattleShipWf {
             //Repaint();
         }
         public void Repaint(bool repaintOne) {
+            
             this.Invalidate();
         }
     }
