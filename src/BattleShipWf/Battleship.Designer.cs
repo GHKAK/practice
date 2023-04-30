@@ -139,8 +139,8 @@
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(button1);
-            Name = "Form1";
-            Text = "Form1";
+            Name = "Battleship";
+            Text = "Battleship";
             Load += Form1_Load;
             ResumeLayout(false);
             PerformLayout();

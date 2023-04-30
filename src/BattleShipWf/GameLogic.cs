@@ -55,20 +55,20 @@
                 MakeUserMove(row, col);
             }
         }
-        public void MakeBotMove() {
+        private void MakeBotMove() {
             (int row, int col) = Bot.GetMoveCoordinates();
             MakeShot(_userBattleFieldDataView, _userBattleFieldDataView, row, col);
             Controller.Repaint();
             SwitchMove();
             MoveRoutine();
         }
-        public void MakeUserMove(int row, int col) {
+        private void MakeUserMove(int row, int col) {
             MakeShot(_botBattleFieldData, _botBattleFieldView, row, col);
             Controller.Repaint();
             SwitchMove();
             MoveRoutine();
         }
-        public void MoveRoutine() {
+        private void MoveRoutine() {
             Controller.UpdateData(_botHitsCount, _userHitsCount);
             if(State == GameState.Over) {
                 EndGame();
