@@ -1,7 +1,4 @@
-﻿using BattleShipWf;
-using System.Runtime.CompilerServices;
-
-namespace BattleShipWf {
+﻿namespace BattleShipWf {
     public enum SeaState {
         Empty,
         Ship,
@@ -10,7 +7,7 @@ namespace BattleShipWf {
     }
     public enum GameState {
         Prepare,
-        PlayerMove,
+        UserMove,
         BotMove,
         Over,
     }
@@ -30,12 +27,14 @@ namespace BattleShipWf {
         }
         public Cell[,] BattleFieldData { get; set; }
     }
-    public static class BattleFieldDataExtensions{
+    public static class BattleFieldDataExtensions {
         public static bool IsValid(this Cell[,] battleFieldData) {
             int shipCellCount = 0;
             for(int i = 0; i < BattleFieldModel.SIZE; i++) {
                 for(int j = 0; j < BattleFieldModel.SIZE; j++) {
-                    shipCellCount++;
+                    if(battleFieldData[i, j].State == SeaState.Ship) {
+                        shipCellCount++;
+                    }
                 }
             }
             if(shipCellCount == 20) {
@@ -45,14 +44,3 @@ namespace BattleShipWf {
         }
     }
 }
-//var battleFieldModelBot = new BattleFieldModel();
-//var battleFieldModelUser = new BattleFieldModel();
-//this.battleField1 = new BattleShipWf.BattleField(battleFieldModelBot);
-//this.battleField2 = new BattleShipWf.BattleField(battleFieldModelUser);
-//BattleFieldBot = battleField1;
-//BattleFieldUser = battleField2;
-//GameEngine = new GameEngine(battleFieldModelUser, battleFieldModelBot);
-//Controller = new Controller(GameEngine, this);
-//this.button1 = new System.Windows.Forms.Button();
-//this.label1 = new System.Windows.Forms.Label();
-//this.label2 = new System.Windows.Forms.Label();

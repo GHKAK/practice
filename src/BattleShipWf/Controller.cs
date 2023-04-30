@@ -1,42 +1,49 @@
 ﻿namespace BattleShipWf {
     public class Controller {
-        private GameEngine GameEngine { get; set; }
-        private Form1 Form { get; set; }
-        public Controller(GameEngine gameEngine, Form1 form) {
+        private GameLogic GameEngine { get; set; }
+        private Battleship FormBattleship { get; set; }
+        public Controller(GameLogic gameEngine, Battleship form) {
             this.GameEngine = gameEngine;
             gameEngine.Controller = this;
-            this.Form = form;
-            form.BattleFieldBot.Controller = this;
-            form.BattleFieldUser.Controller = this;
-
+            this.FormBattleship = form;
+            form.BotBattleField.Controller = this;
+            form.UserBattleField.Controller = this;
         }
-        public void Repaint() {
+        internal void Repaint() {
             if(GameEngine.State == GameState.Prepare || GameEngine.State == GameState.Over) {
-                Form.BattleFieldBot.Repaint();
-                Form.BattleFieldUser.Repaint();
-            } else if(GameEngine.State == GameState.PlayerMove) {
-                Form.BattleFieldUser.Repaint();
+                FormBattleship.BotBattleField.Repaint();
+                FormBattleship.UserBattleField.Repaint();
+            } else if(GameEngine.State == GameState.UserMove) {
+                FormBattleship.BotBattleField.Repaint();
             } else if(GameEngine.State == GameState.BotMove) {
-                Form.BattleFieldBot.Repaint();
+                FormBattleship.UserBattleField.Repaint();
             }
         }
-        public void Resolve(int row, int col, BattleField battleField) {
+        internal void Resolve(int row, int col, BattleField battleField) {
             GameEngine.ResolveAction(row, col, battleField.BattleFieldData);
         }
-        public void Restart() {
+        internal void Restart() {
             GameEngine.RestartGame();
         }
-        public void Start() {
-            GameEngine.StartGame();
+        internal void Start() {
+            if(GameEngine.IsValidLocation()) {
+                GameEngine.StartGame();
+            } else {
+                MessageBox.Show("The position and number of the ships is not according to the rules");
+            }
         }
-        public void UpdateUserCount(int count) {
-            Form.SetUserCount(count);
+        internal void UpdateUserCount(int count) {
+            FormBattleship.SetUserCount(count);
         }
-        public void UpdateBotCount(int count) {
-            Form.SetUserCount(count);
+        internal void UpdateBotCount(int count) {
+            FormBattleship.SetBotCount(count);
         }
         internal void EndGame(string winnerName) {
             MessageBox.Show("The winner is " + winnerName);
+        }
+        internal void UpdateData(int botCount, int userCount) {
+            FormBattleship.SetBotCount(botCount);
+            FormBattleship.SetUserCount(userCount);
         }
     }
 }

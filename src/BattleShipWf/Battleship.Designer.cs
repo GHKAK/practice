@@ -1,5 +1,5 @@
 ﻿namespace BattleShipWf {
-    partial class Form1 {
+    partial class Battleship {
         /// <summary>
         ///  Required designer variable.
         /// </summary>
@@ -17,14 +17,7 @@
         }
 
         private void InitializeComponent() {
-            var battleFieldModelBot = new BattleFieldModel();
-            var battleFieldModelUser = new BattleFieldModel();
-            this.battleField1 = new BattleField(battleFieldModelBot);
-            this.battleField2 = new BattleField(battleFieldModelUser);
-            BattleFieldBot = battleField1;
-            BattleFieldUser = battleField2;
-            GameEngine = new GameEngine(battleFieldModelUser, battleFieldModelBot);
-            Controller = new Controller(GameEngine, this);
+            
             button1 = new Button();
             label1 = new Label();
             label2 = new Label();
@@ -117,27 +110,27 @@
             // 
             // battleField1
             // 
-            this.battleField1.IsClickable = false;
-            this.battleField1.Location = new Point(96, 47);
-            this.battleField1.Name = "battleField1";
-            this.battleField1.Size = new Size(250, 250);
-            this.battleField1.TabIndex = 11;
+            battleField1.IsClickable = false;
+            battleField1.Location = new Point(96, 47);
+            battleField1.Name = "battleField1";
+            battleField1.Size = new Size(250, 250);
+            battleField1.TabIndex = 11;
             // 
             // battleField2
             // 
-            this.battleField2.IsClickable = false;
-            this.battleField2.Location = new Point(96, 321);
-            this.battleField2.Name = "battleField2";
-            this.battleField2.Size = new Size(250, 250);
-            this.battleField2.TabIndex = 12;
+            battleField2.IsClickable = false;
+            battleField2.Location = new Point(96, 321);
+            battleField2.Name = "battleField2";
+            battleField2.Size = new Size(250, 250);
+            battleField2.TabIndex = 12;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 606);
-            Controls.Add(this.battleField2);
-            Controls.Add(this.battleField1);
+            Controls.Add(battleField2);
+            Controls.Add(battleField1);
             Controls.Add(UserHitsCountLabel);
             Controls.Add(BotHitsCountLabel);
             Controls.Add(label5);
@@ -164,9 +157,9 @@
         private Label BotHitsCountLabel;
         private Label UserHitsCountLabel;
 
-        public BattleField BattleFieldBot { get; private set; }
+        public BattleField BotBattleField { get; private set; }
         public Controller Controller { get; private set; }
-        public BattleField BattleFieldUser { get; private set; }
-        public GameEngine GameEngine { get; set; }
+        public BattleField UserBattleField { get; private set; }
+        public GameLogic GameEngine { get; set; }
     }
 }
