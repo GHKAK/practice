@@ -11,37 +11,39 @@ using System.Windows.Forms;
 namespace BattleShipWf {
 
     public partial class BattleField : UserControl {
-        private int cellsCount = 10;
+        //private int cellsCount = 10;
         private int gridRightBottomPadding = 10;
         private int cellWidth, cellHeight;
         private int lastCellRow, lastCellColumn;
         public bool IsClickable { get; set; }
         public Controller Controller { get; set; }
         public Cell[,] BattleFieldData { get; private set; }
-        //public BattleField() {
-        //    this.BattleFieldData = (new BattleFieldModel()).BattleFieldData;
-        //    InitializeComponent();
-        //    SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint |
-        //    ControlStyles.AllPaintingInWmPaint, true);
-        //    UpdateStyles();
-        //}
-        public BattleField(BattleFieldModel battleFieldModel) {
-            this.BattleFieldData = battleFieldModel.BattleFieldData;
+        public BattleField():base() {
+            this.BattleFieldData = (new BattleFieldModel()).BattleFieldData;
             InitializeComponent();
             SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint |
             ControlStyles.AllPaintingInWmPaint, true);
             UpdateStyles();
         }
+        public BattleField(BattleFieldModel battleFieldModel):base() {
+            this.BattleFieldData = battleFieldModel.BattleFieldData;
+            InitializeComponent();
+            this.SetStyle(ControlStyles.UserPaint, true);
+
+            SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint |
+            ControlStyles.AllPaintingInWmPaint, true);
+        }
         protected override void OnPaint(PaintEventArgs e) {
+            base.OnPaint(e);
             using (Pen pen = new Pen(Color.Fuchsia)) {
-            cellHeight = (this.Height - gridRightBottomPadding / cellsCount) / cellsCount;
-            cellWidth = (this.Width - gridRightBottomPadding / cellsCount) / cellsCount;
-                for (int y = 0; y <= 10; y++) {
+            cellHeight = (this.Height - gridRightBottomPadding / BattleFieldModel.SIZE) / BattleFieldModel.SIZE;
+            cellWidth = (this.Width - gridRightBottomPadding / BattleFieldModel.SIZE) / BattleFieldModel.SIZE;
+                for (int y = 0; y <= BattleFieldModel.SIZE; y++) {
                     int yPos = y * cellHeight;
                     e.Graphics.DrawLine(pen, 0, yPos, this.Width - gridRightBottomPadding, yPos);
                 }
 
-                for (int x = 0; x <= 10; x++) {
+                for (int x = 0; x <= BattleFieldModel.SIZE; x++) {
                     int xPos = x * cellWidth;
                     e.Graphics.DrawLine(pen, xPos, 0, xPos, this.Height - gridRightBottomPadding);
                 }
@@ -54,8 +56,8 @@ namespace BattleShipWf {
             Brush redBrush = new SolidBrush(Color.Red);
             Brush blackBrush = new SolidBrush(Color.Black);
 
-            for (int y = 0; y < this.BattleFieldData.GetLength(0); y++) {
-                for (int x = 0; x < BattleFieldData.GetLength(1); x++) {
+            for (int y = 0; y < BattleFieldModel.SIZE; y++) {
+                for (int x = 0; x < BattleFieldModel.SIZE; x++) {
                     Rectangle cellRect = new Rectangle(x * cellWidth + 1, y * cellHeight + 1, cellWidth - 1, cellHeight - 1);
                     switch (BattleFieldData[y, x].State) {
                         case SeaState.Empty:
@@ -73,6 +75,10 @@ namespace BattleShipWf {
                     }
                 }
             }
+            blueBrush.Dispose();
+            grayBrush.Dispose();
+            redBrush.Dispose();
+            blackBrush.Dispose();
         }
         protected void OnRepaintCell(PaintEventArgs e) {
 
@@ -84,14 +90,10 @@ namespace BattleShipWf {
             lastCellRow = e.Y / cellHeight;
             lastCellColumn = e.X / cellWidth;
             Controller.Resolve(lastCellRow, lastCellColumn, this);
-
-            //BattleFieldData[row, col].State = SeaState.Ship;
-
-            //Repaint();
         }
-        public void Repaint(bool repaintOne) {
-            
+        public void Repaint() {
             this.Invalidate();
+            this.Update();
         }
     }
 }

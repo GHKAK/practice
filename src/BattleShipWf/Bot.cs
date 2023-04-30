@@ -8,21 +8,43 @@
         }
     }
     public class Bot {
-        private Cell[,] _botBattleFieldData;
+        public Cell[,] BotBattleFieldData { get; private set; }
+
         private List<List<Coordinates>> _botPossibleMoves;
         public Bot(Cell[,] botBattleFieldData) {
-            _botBattleFieldData = botBattleFieldData;
-            _botPossibleMoves = new List<List<Coordinates>>();
-            for (int i = 0; i < botBattleFieldData.GetLength(0); i++) {
-            _botPossibleMoves.Add(new List<Coordinates>());
-                for (int j = 0; j < botBattleFieldData.GetLength(1); j++) {
-                    _botPossibleMoves[i].Add(new Coordinates(i,j));
-                }
-            }
+            BotBattleFieldData = (new BattleFieldModel()).BattleFieldData;
+            Prepare();
+        }
+        public SeaState GetBattleFieldCellState(int row, int col) {
+            return BotBattleFieldData[row, col].State;
         }
         public (int row, int col) GetMoveCoordinates() {
             Random random= new Random();
             return (random.Next(10), random.Next(10));
         }
+        public void Prepare() {
+            GenerateMovesList();
+            GenerateBattleField();
+        }
+        public SeaState GetState(int row, int col) {
+            return BotBattleFieldData[row, col].State;
+        }
+        private void GenerateMovesList() {
+            _botPossibleMoves = new List<List<Coordinates>>();
+            for(int i = 0; i < BattleFieldModel.SIZE; i++) {
+                _botPossibleMoves.Add(new List<Coordinates>());
+                for(int j = 0; j < BattleFieldModel.SIZE; j++) {
+                    _botPossibleMoves[i].Add(new Coordinates(i, j));
+                }
+            }
+        }
+        private void GenerateBattleField() {
+            for(int i = 0; i < BattleFieldModel.SIZE; i++) {
+                for(int j = 0; j < BattleFieldModel.SIZE ; j++) {
+                    BotBattleFieldData[i, j].State = SeaState.Ship;
+                }
+            }
+        }
+
     }
 }

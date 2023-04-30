@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace BattleShipWf {
+﻿namespace BattleShipWf {
     public class Controller {
         private GameEngine GameEngine { get; set; }
         private Form1 Form { get; set; }
@@ -13,15 +11,13 @@ namespace BattleShipWf {
 
         }
         public void Repaint() {
-            if (GameEngine.State == GameState.Prepare) {
-                Form.BattleFieldUser.Repaint(true);
-            } else if (GameEngine.State == GameState.PlayerMove) {
-                Form.BattleFieldUser.Repaint(true);
-            } else if (GameEngine.State == GameState.BotMove) {
-                Form.BattleFieldBot.Repaint(true);
-            } else if (GameEngine.State == GameState.Over) {
-                Form.BattleFieldUser.Repaint(false);
-                Form.BattleFieldBot.Repaint(false);
+            if(GameEngine.State == GameState.Prepare || GameEngine.State == GameState.Over) {
+                Form.BattleFieldBot.Repaint();
+                Form.BattleFieldUser.Repaint();
+            } else if(GameEngine.State == GameState.PlayerMove) {
+                Form.BattleFieldUser.Repaint();
+            } else if(GameEngine.State == GameState.BotMove) {
+                Form.BattleFieldBot.Repaint();
             }
         }
         public void Resolve(int row, int col, BattleField battleField) {
@@ -32,6 +28,15 @@ namespace BattleShipWf {
         }
         public void Start() {
             GameEngine.StartGame();
+        }
+        public void UpdateUserCount(int count) {
+            Form.SetUserCount(count);
+        }
+        public void UpdateBotCount(int count) {
+            Form.SetUserCount(count);
+        }
+        internal void EndGame(string winnerName) {
+            MessageBox.Show("The winner is " + winnerName);
         }
     }
 }

@@ -10,7 +10,7 @@
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing) {
-            if (disposing && (components != null)) {
+            if(disposing && (components != null)) {
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -19,91 +19,138 @@
         private void InitializeComponent() {
             var battleFieldModelBot = new BattleFieldModel();
             var battleFieldModelUser = new BattleFieldModel();
-            this.battleField1 = new BattleShipWf.BattleField(battleFieldModelBot);
-            this.battleField2 = new BattleShipWf.BattleField(battleFieldModelUser);
+            this.battleField1 = new BattleField(battleFieldModelBot);
+            this.battleField2 = new BattleField(battleFieldModelUser);
             BattleFieldBot = battleField1;
             BattleFieldUser = battleField2;
             GameEngine = new GameEngine(battleFieldModelUser, battleFieldModelBot);
             Controller = new Controller(GameEngine, this);
-            this.button1 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.SuspendLayout();
+            button1 = new Button();
+            label1 = new Label();
+            label2 = new Label();
+            button2 = new Button();
+            label3 = new Label();
+            label5 = new Label();
+            BotHitsCountLabel = new Label();
+            UserHitsCountLabel = new Label();
+            SuspendLayout();
+            // 
+            // button1
+            // 
+            button1.Location = new Point(690, 560);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 2;
+            button1.Text = "Restart";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Location = new Point(37, 47);
+            label1.Name = "label1";
+            label1.Size = new Size(37, 24);
+            label1.TabIndex = 3;
+            label1.Text = "Bot";
+            label1.Click += label1_Click;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
+            label2.Location = new Point(37, 311);
+            label2.Name = "label2";
+            label2.Size = new Size(44, 24);
+            label2.TabIndex = 4;
+            label2.Text = "You";
+            // 
+            // button2
+            // 
+            button2.Location = new Point(690, 467);
+            button2.Name = "button2";
+            button2.Size = new Size(75, 23);
+            button2.TabIndex = 5;
+            button2.Text = "Start";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
+            label3.Location = new Point(463, 47);
+            label3.Name = "label3";
+            label3.Size = new Size(88, 24);
+            label3.TabIndex = 6;
+            label3.Text = "Bot Hits : ";
+            label3.Click += label3_Click;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Font = new Font("MS Reference Sans Serif", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
+            label5.Location = new Point(463, 311);
+            label5.Name = "label5";
+            label5.Size = new Size(114, 24);
+            label5.TabIndex = 8;
+            label5.Text = "Your Hits :";
+            // 
+            // BotHitsCountLabel
+            // 
+            BotHitsCountLabel.AutoSize = true;
+            BotHitsCountLabel.Font = new Font("MS Reference Sans Serif", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
+            BotHitsCountLabel.Location = new Point(544, 47);
+            BotHitsCountLabel.Name = "BotHitsCountLabel";
+            BotHitsCountLabel.Size = new Size(0, 24);
+            BotHitsCountLabel.TabIndex = 9;
+            // 
+            // PlayerHitsCountLabel
+            // 
+            UserHitsCountLabel.AutoSize = true;
+            UserHitsCountLabel.Font = new Font("MS Reference Sans Serif", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
+            UserHitsCountLabel.Location = new Point(574, 311);
+            UserHitsCountLabel.Name = "PlayerHitsCountLabel";
+            UserHitsCountLabel.Size = new Size(0, 24);
+            UserHitsCountLabel.TabIndex = 10;
             // 
             // battleField1
             // 
             this.battleField1.IsClickable = false;
-            this.battleField1.Location = new System.Drawing.Point(86, 47);
+            this.battleField1.Location = new Point(96, 47);
             this.battleField1.Name = "battleField1";
-            this.battleField1.Size = new System.Drawing.Size(250, 250);
-            this.battleField1.TabIndex = 0;
+            this.battleField1.Size = new Size(250, 250);
+            this.battleField1.TabIndex = 11;
             // 
             // battleField2
             // 
             this.battleField2.IsClickable = false;
-            this.battleField2.Location = new System.Drawing.Point(86, 311);
+            this.battleField2.Location = new Point(96, 321);
             this.battleField2.Name = "battleField2";
-            this.battleField2.Size = new System.Drawing.Size(250, 250);
-            this.battleField2.TabIndex = 1;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(690, 560);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Restart";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Source Serif Pro", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(37, 47);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(40, 26);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Bot";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Source Serif Pro", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label2.Location = new System.Drawing.Point(37, 311);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(43, 26);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "You";
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(690, 467);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 5;
-            this.button2.Text = "Start";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.battleField2.Size = new Size(250, 250);
+            this.battleField2.TabIndex = 12;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 606);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.battleField2);
-            this.Controls.Add(this.battleField1);
-            this.Name = "Form1";
-            this.Text = "Form1";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(800, 606);
+            Controls.Add(this.battleField2);
+            Controls.Add(this.battleField1);
+            Controls.Add(UserHitsCountLabel);
+            Controls.Add(BotHitsCountLabel);
+            Controls.Add(label5);
+            Controls.Add(label3);
+            Controls.Add(button2);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(button1);
+            Name = "Form1";
+            Text = "Form1";
+            Load += Form1_Load;
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         public BattleField battleField1;
@@ -112,6 +159,10 @@
         private Label label1;
         private Label label2;
         private Button button2;
+        private Label label3;
+        private Label label5;
+        private Label BotHitsCountLabel;
+        private Label UserHitsCountLabel;
 
         public BattleField BattleFieldBot { get; private set; }
         public Controller Controller { get; private set; }
