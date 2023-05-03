@@ -5,10 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-//builder.Services.AddDbContext<TodoContext>(opt =>
-//    opt.UseInMemoryDatabase("TodoList"));
-//builder.Services.AddDbContext<TodoContext>(opt =>opt.UseNpgsql(builder.Configuration.GetConnectionString("postgres")));
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<TodoContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("postgres")));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
