@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
+using WeatherForecast.Models;
 
 namespace TodoApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class TodoItemsController : ControllerBase {
-    private readonly TodoContext _context;
+    private readonly APIDbContext _context;
 
-    public TodoItemsController(TodoContext context) {
+    public TodoItemsController(APIDbContext context) {
         _context = context;
     }
 

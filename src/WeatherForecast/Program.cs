@@ -1,12 +1,18 @@
+using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TodoApi.Models;
+using WeatherForecast.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<TodoContext>(opt =>
-    opt.UseInMemoryDatabase("TodoList")); 
+//builder.Services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoList")); 
+builder.Services.AddEntityFrameworkNpgsql()
+       .AddDbContext<APIDbContext>(opt => 
+        opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgresDB")));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
