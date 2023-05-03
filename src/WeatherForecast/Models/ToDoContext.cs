@@ -8,4 +8,8 @@ public class TodoContext : DbContext {
     }
 
     public DbSet<TodoItem> TodoItems { get; set; } = null!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder) {
+        base.OnModelCreating(modelBuilder);
+    }
 }
