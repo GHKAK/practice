@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
 using WeatherForecast.Commands;
+using WeatherForecast.Models;
 using WeatherForecast.Queries;
 
 namespace TodoApi.Controllers;
@@ -48,39 +49,24 @@ public class TodoItemsController : ControllerBase {
     //// POST: api/TodoItems
     //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     //// <snippet_Create>
-    //[HttpPost]
-    //public async Task<ActionResult<TodoItemDTO>> PostTodoItem(TodoItemDTO todoDTO) {
-    //    var todoItem = new TodoItem {
-    //        IsComplete = todoDTO.IsComplete,
-    //        Name = todoDTO.Name
-    //    };
+    [HttpPost]
+    public async Task<ActionResult<TodoItemDTO>> PostTodoItem(TodoItemDTO todoDTO) {
+        var todoItem = await _mediator.Send(new PostItemCommand(todoDTO));
+        return CreatedAtAction(
+            nameof(GetTodoItemByID),
+            new { id = todoItem.Id },
+            todoItem.ItemToDTO());
+    }
+    // </snippet_Create>
 
-    //    _context.TodoItems.Add(todoItem);
-    //    await _context.SaveChangesAsync();
+    // DELETE: api/TodoItems/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTodoItem(long id) {
 
-    //    return CreatedAtAction(
-    //        nameof(GetTodoItem),
-    //        new { id = todoItem.Id },
-    //        ItemToDTO(todoItem));
-    //}
-    //// </snippet_Create>
-
-    //// DELETE: api/TodoItems/5
-    //[HttpDelete("{id}")]
-    //public async Task<IActionResult> DeleteTodoItem(long id) {
-    //    var todoItem = await _context.TodoItems.FindAsync(id);
-    //    if (todoItem == null) {
-    //        return NotFound();
-    //    }
-
-    //    _context.TodoItems.Remove(todoItem);
-    //    await _context.SaveChangesAsync();
-
-    //    return NoContent();
-    //}
-
-    //private bool TodoItemExists(long id) {
-    //    return _context.TodoItems.Any(e => e.Id == id);
-    //}
-
+        var isDeleted = await _mediator.Send(new DeleteItemCommand(id));
+        if (!isDeleted) {
+            return NotFound();
+        }
+        return NoContent();
+    }
 }

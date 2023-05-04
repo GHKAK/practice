@@ -4,22 +4,22 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using WeatherForecast.Models;
+using TodoApi.Models;
 
 #nullable disable
 
 namespace WeatherForecast.Migrations
 {
-    [DbContext(typeof(APIDbContext))]
-    [Migration("20230503122805_initial_migrations")]
-    partial class initial_migrations
+    [DbContext(typeof(TodoContext))]
+    [Migration("20230504085400_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0-preview.3.23174.2")
+                .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
