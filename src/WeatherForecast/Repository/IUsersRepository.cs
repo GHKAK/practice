@@ -8,6 +8,6 @@ public interface IUsersRepository {
     Task<IEnumerable<TodoItemDTO>> GetTodoItemsForUser(long userId);
     Task<User> AddUser(UserDTO userDTO);
     Task<TodoItem> AddTodoForUser(TodoItemDTO todoItemDTO,long userId);
-    void UpdateUser();
+    Task<bool> UpdateUser(UserDTO userDTO);
     Task<bool> DeleteUser(long userId);
 }

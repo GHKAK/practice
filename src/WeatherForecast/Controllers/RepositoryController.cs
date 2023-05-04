@@ -20,9 +20,8 @@ public class RepositoryController : ControllerBase {
         return Ok(users);
     }
 
-    //// POST: api/TodoItems
-    //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    //// <snippet_Create>
+    // POST: api/TodoItems
+    // <snippet_Create>
     [HttpPost("PostUser")]
     public async Task<ActionResult<User>> PostUser(UserDTO user) {
         var userAdded = await _repository.AddUser(user);
@@ -47,6 +46,7 @@ public class RepositoryController : ControllerBase {
         return Ok(todos);
     }
     //</snippet_GetTodos>
+
     // DELETE: api/TodoItems/5
     [HttpDelete("DeleteUser{userId}")]
     public async Task<IActionResult> DeleteUser(long userId) {
@@ -59,16 +59,26 @@ public class RepositoryController : ControllerBase {
     }
     //</snippet_DeleteUser>
 
-    // DELETE: api/TodoItems/5
+    // POST: api/TodoItems/5
     [HttpPost("PostTodoForUser{userId}")]
     public async Task<ActionResult<TodoItemDTO>> PostTodo(TodoItemDTO todo, long userId) {
-        try { 
-        var item = await _repository.AddTodoForUser(todo,userId);
-        return Ok(item.ItemToDTO());
-        }
-        catch (ArgumentException ex) {
+        try {
+            var item = await _repository.AddTodoForUser(todo, userId);
+            return Ok(item.ItemToDTO());
+        } catch (ArgumentException ex) {
             return NotFound(ex.Message);
         }
+    }
+    //</snippet_Create>
+
+    // PUT: api/TodoItems/5
+    [HttpPut("PutUser")]
+    public async Task<IActionResult> PutUser(UserDTO userDTO) {
+        var isAdded = await _repository.UpdateUser(userDTO);
+        if (!isAdded) {
+            return NotFound();
+        }
+        return NoContent();
     }
     //</snippet_Create>
 }

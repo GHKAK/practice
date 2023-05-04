@@ -26,8 +26,8 @@ public class UsersRepository : IUsersRepository {
     }
 
     public async Task<User> AddUser(UserDTO userDTO) {
-        var newUser= new User() { Id = userDTO.Id, UserName = userDTO.UserName };
-        _context.Users.Add(newUser) ;
+        var newUser = new User() { Id = userDTO.Id, UserName = userDTO.UserName };
+        _context.Users.Add(newUser);
         await _context.SaveChangesAsync();
         return newUser;
     }
@@ -54,10 +54,17 @@ public class UsersRepository : IUsersRepository {
     }
 
     public async Task<IEnumerable<User>> GetUsers() {
-        return await _context.Users.Select(x=>x).ToListAsync();
+        return await _context.Users.Select(x => x).ToListAsync();
     }
 
-    public void UpdateUser() {
-        throw new NotImplementedException();
+    public async Task<bool> UpdateUser(UserDTO userDTO) {
+        var user = await GetUserById(userDTO.Id);
+        if (user == null) {
+            return false;
+        }
+        user.Id = userDTO.Id;
+        user.UserName = userDTO.UserName;
+        await _context.SaveChangesAsync();
+        return true;
     }
 }
