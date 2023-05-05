@@ -15,7 +15,7 @@ public class RepositoryController : ControllerBase {
 
     // GET: api/TodoItems
     [HttpGet("GetUsers")]
-    public async Task<ActionResult<IEnumerable<User>>> GetUsers() {
+    public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers() {
         var users = await _repository.GetUsers();
         return Ok(users);
     }
@@ -32,7 +32,7 @@ public class RepositoryController : ControllerBase {
     //GET: api/TodoItems/5
     // <snippet_GetByID>
     [HttpGet("GetUserById{userId}")]
-    public async Task<ActionResult<User>> GetUser(long userId) {
+    public async Task<ActionResult<UserDTO>> GetUser(long userId) {
         var userFounded = await _repository.GetUserById(userId);
         return Ok(userFounded);
     }
