@@ -3,8 +3,8 @@
 namespace Passports.Models {
     public class Passport {
         [Index(0)]
-        public string? Series { get; set; }
+        public int Series { get; set; }
         [Index(1)]
-        public string? Number { get; set; }
+        public int Number { get; set; }
     }
 }
