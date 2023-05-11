@@ -11,7 +11,7 @@ using Passports.Models;
 namespace Passports.Migrations
 {
     [DbContext(typeof(PassportContext))]
-    [Migration("20230510204127_init")]
+    [Migration("20230511091419_init")]
     partial class init
     {
         /// <inheritdoc />

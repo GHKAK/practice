@@ -12,11 +12,11 @@ namespace Passports.Controllers {
             _postgresRepository = postgresRepository;
         }
 
-        [HttpGet("ReadLocalFile")]
-        public IActionResult ReadLocalFile() {
+        [HttpGet("FindInChunk")]
+        public IActionResult FindInChunk(int series, int number) {
             //_localRepository.DecompressFile();
-            var result = _localRepository.ReadAll();
-            return Ok(result.Count);
+            var matches=_localRepository.FindInChunks(series, number);
+            return Ok(matches + " Founded");
         }
 
         [HttpGet("WriteToPostgres")]
