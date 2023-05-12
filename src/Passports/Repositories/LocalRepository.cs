@@ -4,8 +4,11 @@ using ICSharpCode.SharpZipLib.BZip2;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.OpenApi.Models;
 using Passports.Models;
+using System;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Transactions;
 
 namespace Passports.Repositories {
     public class LocalRepository : IRepository {
@@ -34,7 +37,7 @@ namespace Passports.Repositories {
             return _records;
         }
         public int FindInChunks(int series, int number) {
-            int chunkSize = 120;
+            int chunkSize = 12000;
             int headersOffset = 26;
             int match = 0;
             string remainedRow = String.Empty;
@@ -58,21 +61,97 @@ namespace Passports.Repositories {
                         Array.Resize(ref rows, rows.Length - 1);
                         addRow = true;
                     }
-                    match += FindInChunk(rows, series, number);
+                    match += MatchesInChunk(rows, series, number);
                 }
             }
             return match;
         }
-        public int FindInChunk(string[] rows, int series, int number) {
+        public async Task<int> FindInChunksAsync(int series, int number) {
+            int chunkSize = 12000;
+            int headersOffset = 26;
+            int match = 0;
+            using (FileStream fs = File.OpenRead(_csvFileInfo.FullName)) {
+                byte[] buffer = new byte[headersOffset];
+                int bytesRead;
+                Task<(string[], int)>[] tasks = new Task<(string[], int)>[10];
+
+                bytesRead = fs.Read(buffer, 0, headersOffset);
+                buffer = new byte[chunkSize];
+                int i = 0;
+                while ((bytesRead = await fs.ReadAsync(buffer, 0, buffer.Length)) > 0) {
+                    byte[] chunkData = new byte[bytesRead];
+                    Array.Copy(buffer, 0, chunkData, 0, bytesRead);
+                    if (i < 10) {
+                        var findTask = ProcessChunkAsync(chunkData,series,number);
+                        tasks[i]=findTask;
+                    } else {
+                        var index = Task.WaitAny(tasks);
+                        //Task.WaitAll(tasks.ToArray());
+                        //foreach (var task in tasks) {
+                        //    (string[] problemRows, int matches) =task.Result;
+                        //    match += matches;
+                        //}
+                        (string[] problemRows, int matches) = tasks[index].Result;
+                        match += matches;
+                        tasks[index] = ProcessChunkAsync(chunkData, series, number);
+                        //tasks = new();
+                    }
+                }
+            }
+            return match;
+        }
+        private async Task<(string[], int)> ProcessChunkAsync(byte[] chunkData, int series, int number) {
+            var processingTask = GetRowsFromChunkAsync(chunkData);
+            var rows = await processingTask;
+            var matchesTask=MatchesInRowsAsync(rows, series, number);
+            var matches = await matchesTask;
+            var problemRowsTask = ProblemRows(rows);
+            var problemRows = await problemRowsTask;
+            return(problemRows, matches);
+        }
+        private async Task<string[]> GetRowsFromChunkAsync(byte[] chunkData) {
+            string chunk = System.Text.Encoding.Default.GetString(chunkData, 0, chunkData.Length);
+            string[] rows = GetRowsFromChunk(chunk);
+            return rows;
+        }
+        private async Task<int> MatchesInRowsAsync(string[] rows, int series, int number) {
+            int match = 0;
+            int seriesData, numberData;
+            for (int i = 1; i < rows.Length-1; i++) {
+                var row = rows[i];
+                var passportData = row.Split(",");
+                if (!int.TryParse(passportData[0], out seriesData)
+                    || !int.TryParse(passportData[1], out numberData)) {
+                    continue;
+                }
+                if (series == seriesData && number == numberData) {
+                    match++;
+                }
+            }
+            return match;
+        }
+        private async Task<string[]> ProblemRows(string[] rows) {
+            var replaceRows = new string[2];
+            replaceRows[0] = rows[0];
+            replaceRows[0] = rows[^1];
+            return replaceRows;
+        }
+        private string[] GetRowsFromChunk(string chunk) {
+            return chunk.Trim('\n').Split("\n");
+        }
+        private void AddRemainedRow(string[] rows, string remainedRow) {
+            rows[0] = remainedRow + rows[0];
+        }
+        public int MatchesInChunk(string[] rows, int series, int number) {
             int match = 0;
             int seriesData, numberData;
             foreach (var row in rows) {
                 var passportData = row.Split(",");
-                if (!int.TryParse(passportData[0], out seriesData) 
+                if (!int.TryParse(passportData[0], out seriesData)
                     || !int.TryParse(passportData[1], out numberData)) {
                     continue;
                 }
-                if(series== seriesData && number == numberData) {
+                if (series == seriesData && number == numberData) {
                     match++;
                 }
             }
@@ -160,17 +239,11 @@ namespace Passports.Repositories {
                         Array.Resize(ref rows, rows.Length - 1);
                         addRow = true;
                     }
-
                     count += rows.Length;
                 }
             }
             return count;
         }
-        private string[] GetRowsFromChunk(string chunk) {
-            return chunk.Trim('\n').Split("\n");
-        }
-        private void AddRemainedRow(string[] rows, string remainedRow) {
-            rows[0] = remainedRow + rows[0];
-        }
+
     }
 }

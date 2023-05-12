@@ -17,10 +17,19 @@ namespace Passports.Controllers {
         [HttpGet("FindInChunk")]
         public IActionResult FindInChunk(int series, int number) {
             //_localRepository.DecompressFile();
-            var matches=_localRepository.FindInChunks(series, number);
-            return Ok(matches + " Founded");
-        }
+            sw.Restart();
+            var matches =_localRepository.FindInChunks(series, number);
+            return Ok($"{matches} Founded   in {sw.Elapsed} seconds");
 
+        }
+        [HttpGet("FindInChunksAsync")]
+        public async Task<IActionResult> FindInChunksAsync(int series, int number) {
+            //_localRepository.DecompressFile();
+            sw.Restart();
+            var matches = await _localRepository.FindInChunksAsync(series, number);
+            sw.Stop();
+            return Ok($"{matches} Founded   in {sw.Elapsed} seconds");
+        }
         [HttpGet("WriteToPostgres")]
         public IActionResult WriteToPostgres() {
             var passports = _localRepository.ReadAll();
