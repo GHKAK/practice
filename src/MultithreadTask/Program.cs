@@ -37,6 +37,8 @@ for (int i = 0; i < taskLimit; i++) {
 
     for (var k = 0; k < runLimit - tasks.Length; k++) {
         var index = Task.WaitAny(tasks);
+        if (index != 0) {
+        }
         tasks[index] = Task.Run(PayloadMethod.CalcFactorial);
     }
     Task.WaitAll(tasks);

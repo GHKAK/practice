@@ -2,6 +2,7 @@
 using CsvHelper.Configuration;
 using ICSharpCode.SharpZipLib.BZip2;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.OpenApi.Models;
 using Passports.Models;
 using System;
@@ -41,7 +42,7 @@ namespace Passports.Repositories {
             int headersOffset = 26;
             int match = 0;
             string remainedRow = String.Empty;
-            using (FileStream fs = File.OpenRead(_csvFileInfo.FullName)) {
+            using (FileStream fs = new FileStream(_csvFileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.None, 524288)) {
                 byte[] buffer = new byte[headersOffset];
                 int bytesRead;
                 bool addRow = false;
@@ -70,37 +71,33 @@ namespace Passports.Repositories {
             int chunkSize = 12000;
             int headersOffset = 26;
             int match = 0;
-            using (FileStream fs = File.OpenRead(_csvFileInfo.FullName)) {
+            using (FileStream fs = new FileStream(_csvFileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.None, 262144)) {
                 byte[] buffer = new byte[headersOffset];
                 int bytesRead;
-                Task<(string[], int)>[] tasks = new Task<(string[], int)>[10];
-
+                int taskLimit = 4;
+                Task<(string[], int)>[] tasks = new Task<(string[], int)>[taskLimit];
                 bytesRead = fs.Read(buffer, 0, headersOffset);
                 buffer = new byte[chunkSize];
                 int i = 0;
-                while ((bytesRead = await fs.ReadAsync(buffer, 0, buffer.Length)) > 0) {
-                    byte[] chunkData = new byte[bytesRead];
-                    Array.Copy(buffer, 0, chunkData, 0, bytesRead);
-                    if (i < 10) {
-                        var findTask = ProcessChunkAsync(chunkData,series,number);
+                while ((bytesRead =  await fs.ReadAsync(buffer, 0, buffer.Length)) > 0) {
+                    if (i < taskLimit) {
+                        var findTask = ProcessChunkAsync(buffer, bytesRead,series, number);
                         tasks[i]=findTask;
+                        i++;
                     } else {
                         var index = Task.WaitAny(tasks);
-                        //Task.WaitAll(tasks.ToArray());
-                        //foreach (var task in tasks) {
-                        //    (string[] problemRows, int matches) =task.Result;
-                        //    match += matches;
-                        //}
                         (string[] problemRows, int matches) = tasks[index].Result;
                         match += matches;
-                        tasks[index] = ProcessChunkAsync(chunkData, series, number);
-                        //tasks = new();
+                        tasks[index] = ProcessChunkAsync(buffer, bytesRead, series, number);
                     }
+                    buffer = new byte[chunkSize];
                 }
             }
             return match;
         }
-        private async Task<(string[], int)> ProcessChunkAsync(byte[] chunkData, int series, int number) {
+        private async Task<(string[], int)> ProcessChunkAsync(byte[] buffer, int bytesRead,int series, int number) {
+            byte[] chunkData = new byte[bytesRead];
+            Array.Copy(buffer, 0, chunkData, 0, bytesRead);
             var processingTask = GetRowsFromChunkAsync(chunkData);
             var rows = await processingTask;
             var matchesTask=MatchesInRowsAsync(rows, series, number);
