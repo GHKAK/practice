@@ -64,7 +64,7 @@ namespace Passports.Repositories {
                         Array.Resize(ref rows, rows.Length - 1);
                         addRow = true;
                     }
-                    match += MatchesInChunk(rows, series, number);
+                    match += MatchesInRows(rows, series, number);
                 }
             }
             return match;
@@ -107,47 +107,82 @@ namespace Passports.Repositories {
             int chunkSize = 120000;
             int headersOffset = 26;
             int match = 0;
+            int taskLimit = 15;
+                Task<(string[], int)>[] tasks = new Task<(string[], int)>[taskLimit];
+                Dictionary<int, string[]> conflictsDictionary = new();
+                Dictionary<int,int> tasksOrderMap=new();
             using (FileStream fs = new FileStream(_csvFileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.None, 262144)) {
                 byte[] buffer = new byte[headersOffset];
                 int bytesRead;
-                int taskLimit = 15;
-                Task<(string[], int)>[] tasks = new Task<(string[], int)>[taskLimit];
                 bytesRead = fs.Read(buffer, 0, headersOffset);
                 buffer = new byte[chunkSize];
+
                 int i = 0;
                 int index = 0;
                 while ((bytesRead = await fs.ReadAsync(buffer, 0, buffer.Length)) > 0) {
                         byte[] bytesBuffer = new byte[bytesRead];
                         Array.Copy(buffer, 0, bytesBuffer, 0, bytesRead);
                     if (i < taskLimit) {
-
                         var findTask =Task.Run(()=>ProcessChunk(bytesBuffer, bytesRead, series, number));
-
-                        tasks[i++] = findTask;
+                        tasks[i] = findTask;
+                        tasksOrderMap.Add(i, i);
                     } else {
                          index = Task.WaitAny(tasks);
-
                         (string[] problemRows, int matches) = tasks[index].Result;
+                        conflictsDictionary.Add(tasksOrderMap[index],problemRows);
                         match += matches;
-                        
                         tasks[index] = Task.Run(() => ProcessChunk(bytesBuffer, bytesRead, series, number));
+                        tasksOrderMap[index] = i;
                     }
                     buffer = new byte[chunkSize];
+                    i++;
                 }
+
                 Task.WaitAll(tasks);
                 for (int l = 0; l < tasks.Length; l++) {
                     if (l == index) {
                         continue;
                     }
                     (string[] problemRows, int matches) = tasks[l].Result;
+                    conflictsDictionary.Add(tasksOrderMap[l], problemRows);
                     match += matches;
+
+
+                    tasksOrderMap[l] = i;
+                    i++;
                 }
+                var mergedConflicts = Task.Run(() => GetRowsList(conflictsDictionary));
+                mergedConflicts.Wait();
+                var list = mergedConflicts.Result;
+                match +=FindInMatchesInConflicts(list, series, number);
             }
             return match;
         }
+        private int FindInMatchesInConflicts(List<string> conflicts, int series, int number) {
+            int matches = 0;
+            string matchString = series + "," + number;
+            for (int i = 0; i < conflicts.Count; i++) {
+                if (conflicts[i] == matchString) {
+                    matches++;
+                }
+            }
+            return matches;
+        }
+        private List<string> GetRowsList(Dictionary<int, string[]> conflicts) { 
+            List<string> rows = new List<string>();
+            for (int i = 0; i < conflicts.Count; i++) {
+                foreach (var row in conflicts[i]) {
+                    if (row != null) {
+                        //merge here
+                        rows.Add(row);
+                    }
+                }
+            }
+            return rows;
+        }
         private (string[], int) ProcessChunk(byte[] buffer, int bytesRead, int series, int number) {
             var rows = GetRowsFromBytes(buffer);
-            var matches = MatchesInRowsNotCutted(rows, series, number);
+            var matches = MatchesInRowsCutted(rows, series, number);
             var problemRows = ProblemRows(rows);
             return (problemRows, matches);
         }
@@ -156,7 +191,7 @@ namespace Passports.Repositories {
             string[] rows = GetRowsFromChunk(chunk);
             return rows;
         }
-        private int MatchesInRowsNotCutted(string[] rows, int series, int number) {
+        private int MatchesInRowsCutted(string[] rows, int series, int number) {
             int match = 0;
             int seriesData, numberData;
             for (int i = 1; i < rows.Length - 1; i++) {
@@ -178,7 +213,7 @@ namespace Passports.Repositories {
         private string[] ProblemRows(string[] rows) {
             var replaceRows = new string[2];
             replaceRows[0] = rows[0];
-            replaceRows[0] = rows[^1];
+            replaceRows[1] = rows[^1];
             return replaceRows;
         }
         private string[] GetRowsFromChunk(string chunk) {
@@ -187,7 +222,7 @@ namespace Passports.Repositories {
         private void AddRemainedRow(string[] rows, string remainedRow) {
             rows[0] = remainedRow + rows[0];
         }
-        public int MatchesInChunk(string[] rows, int series, int number) {
+        public int MatchesInRows(string[] rows, int series, int number) {
             int match = 0;
             int seriesData, numberData;
             foreach (var row in rows) {
