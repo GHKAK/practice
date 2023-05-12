@@ -68,7 +68,7 @@ namespace Passports.Repositories {
             return match;
         }
         public async Task<int> FindInChunksAsync(int series, int number) {
-            int chunkSize = 12000;
+            int chunkSize = 120000;
             int headersOffset = 26;
             int match = 0;
             using (FileStream fs = new FileStream(_csvFileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.None, 262144)) {
@@ -96,22 +96,19 @@ namespace Passports.Repositories {
             return match;
         }
         private async Task<(string[], int)> ProcessChunkAsync(byte[] buffer, int bytesRead,int series, int number) {
-            byte[] chunkData = new byte[bytesRead];
-            Array.Copy(buffer, 0, chunkData, 0, bytesRead);
-            var processingTask = GetRowsFromChunkAsync(chunkData);
-            var rows = await processingTask;
-            var matchesTask=MatchesInRowsAsync(rows, series, number);
-            var matches = await matchesTask;
-            var problemRowsTask = ProblemRows(rows);
-            var problemRows = await problemRowsTask;
-            return(problemRows, matches);
+            byte[] bytesBuffer = new byte[bytesRead];
+            Array.Copy(buffer, 0, bytesBuffer, 0, bytesRead);
+            var rows = GetRowsFromBytes(bytesBuffer);
+            var matches = MatchesInRowsNotCutted(rows, series, number);
+            var problemRows = ProblemRows(rows);
+            return (problemRows, matches);
         }
-        private async Task<string[]> GetRowsFromChunkAsync(byte[] chunkData) {
+        private string[] GetRowsFromBytes(byte[] chunkData) {
             string chunk = System.Text.Encoding.Default.GetString(chunkData, 0, chunkData.Length);
             string[] rows = GetRowsFromChunk(chunk);
             return rows;
         }
-        private async Task<int> MatchesInRowsAsync(string[] rows, int series, int number) {
+        private int MatchesInRowsNotCutted(string[] rows, int series, int number) {
             int match = 0;
             int seriesData, numberData;
             for (int i = 1; i < rows.Length-1; i++) {
@@ -127,7 +124,7 @@ namespace Passports.Repositories {
             }
             return match;
         }
-        private async Task<string[]> ProblemRows(string[] rows) {
+        private string[] ProblemRows(string[] rows) {
             var replaceRows = new string[2];
             replaceRows[0] = rows[0];
             replaceRows[0] = rows[^1];
