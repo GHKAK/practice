@@ -67,6 +67,40 @@ namespace Passports.Repositories {
             }
             return match;
         }
+        public async Task<int> CountFileAsync() {
+            int count = 0;
+            int rowsToRead = 118319374;
+            int taskLimit = 10;
+            Task<int>[] tasks = new Task<int>[taskLimit]; 
+            using (FileStream fs = new FileStream(_csvFileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.None, 32768)) {
+                int rowsPerTask = rowsToRead/ taskLimit;
+                for (int i = 0; i < taskLimit; i++) {
+                    int start = i * rowsPerTask;
+                    int finish = i+1 * rowsPerTask;
+                    if (i == taskLimit - 1) {
+                        finish = rowsToRead;
+                    }
+                    tasks[i] = ReadChunkAsync(fs, start, finish);
+                }
+                Task.WaitAll(tasks);
+                foreach (var task in tasks) {
+                    count += task.Result;
+                }
+            }
+            return count;
+        }
+        private async Task<int> ReadChunkAsync(FileStream fs, int start, int finish) {
+            using var reader = new StreamReader(fs);
+            int count = 0;
+            for (int i = 0; i < start; i++) {
+                string? line = reader.ReadLine();
+            }
+            for (int i = start; i < finish; i++) {
+                string? line = reader.ReadLine();
+                count++;
+            }
+            return count;
+        }
         public async Task<int> FindInChunksAsync(int series, int number) {
             int chunkSize = 120000;
             int headersOffset = 26;
@@ -74,31 +108,33 @@ namespace Passports.Repositories {
             using (FileStream fs = new FileStream(_csvFileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.None, 262144)) {
                 byte[] buffer = new byte[headersOffset];
                 int bytesRead;
-                int taskLimit = 4;
+                int taskLimit = 30;
                 Task<(string[], int)>[] tasks = new Task<(string[], int)>[taskLimit];
                 bytesRead = fs.Read(buffer, 0, headersOffset);
                 buffer = new byte[chunkSize];
                 int i = 0;
-                while ((bytesRead =  await fs.ReadAsync(buffer, 0, buffer.Length)) > 0) {
+                while ((bytesRead = await fs.ReadAsync(buffer, 0, buffer.Length)) > 0) {
                     if (i < taskLimit) {
-                        var findTask = ProcessChunkAsync(buffer, bytesRead,series, number);
-                        tasks[i]=findTask;
+                        byte[] bytesBuffer = new byte[bytesRead];
+                        Array.Copy(buffer, 0, bytesBuffer, 0, bytesRead);
+                        var findTask =Task.Run(()=>ProcessChunk(bytesBuffer, bytesRead, series, number));
+                        tasks[i] = findTask;
                         i++;
                     } else {
                         var index = Task.WaitAny(tasks);
                         (string[] problemRows, int matches) = tasks[index].Result;
                         match += matches;
-                        tasks[index] = ProcessChunkAsync(buffer, bytesRead, series, number);
+                        byte[] bytesBuffer = new byte[bytesRead];
+                        Array.Copy(buffer, 0, bytesBuffer, 0, bytesRead);
+                        tasks[index] = Task.Run(() => ProcessChunk(bytesBuffer, bytesRead, series, number));
                     }
                     buffer = new byte[chunkSize];
                 }
             }
             return match;
         }
-        private async Task<(string[], int)> ProcessChunkAsync(byte[] buffer, int bytesRead,int series, int number) {
-            byte[] bytesBuffer = new byte[bytesRead];
-            Array.Copy(buffer, 0, bytesBuffer, 0, bytesRead);
-            var rows = GetRowsFromBytes(bytesBuffer);
+        private (string[], int) ProcessChunk(byte[] buffer, int bytesRead, int series, int number) {
+            var rows = GetRowsFromBytes(buffer);
             var matches = MatchesInRowsNotCutted(rows, series, number);
             var problemRows = ProblemRows(rows);
             return (problemRows, matches);
@@ -111,9 +147,12 @@ namespace Passports.Repositories {
         private int MatchesInRowsNotCutted(string[] rows, int series, int number) {
             int match = 0;
             int seriesData, numberData;
-            for (int i = 1; i < rows.Length-1; i++) {
+            for (int i = 1; i < rows.Length - 1; i++) {
                 var row = rows[i];
                 var passportData = row.Split(",");
+                if (passportData.Length != 2) { 
+                
+                }
                 if (!int.TryParse(passportData[0], out seriesData)
                     || !int.TryParse(passportData[1], out numberData)) {
                     continue;

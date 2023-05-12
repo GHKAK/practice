@@ -30,6 +30,14 @@ namespace Passports.Controllers {
             sw.Stop();
             return Ok($"{matches} Founded   in {sw.Elapsed} seconds");
         }
+        [HttpGet("CountFileAsync")]
+        public async Task<IActionResult> CountFileAsync() {
+            //_localRepository.DecompressFile();
+            sw.Restart();
+            var count = await _localRepository.CountFileAsync();
+            sw.Stop();
+            return Ok($"{count} Readed");
+        }
         [HttpGet("WriteToPostgres")]
         public IActionResult WriteToPostgres() {
             var passports = _localRepository.ReadAll();
