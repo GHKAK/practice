@@ -3,12 +3,14 @@ using CsvHelper.Configuration;
 using ICSharpCode.SharpZipLib.BZip2;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.OpenApi.Models;
 using Passports.Models;
 using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Transactions;
 
 namespace Passports.Repositories {
@@ -108,27 +110,37 @@ namespace Passports.Repositories {
             using (FileStream fs = new FileStream(_csvFileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.None, 262144)) {
                 byte[] buffer = new byte[headersOffset];
                 int bytesRead;
-                int taskLimit = 30;
+                int taskLimit = 15;
                 Task<(string[], int)>[] tasks = new Task<(string[], int)>[taskLimit];
                 bytesRead = fs.Read(buffer, 0, headersOffset);
                 buffer = new byte[chunkSize];
                 int i = 0;
+                int index = 0;
                 while ((bytesRead = await fs.ReadAsync(buffer, 0, buffer.Length)) > 0) {
-                    if (i < taskLimit) {
                         byte[] bytesBuffer = new byte[bytesRead];
                         Array.Copy(buffer, 0, bytesBuffer, 0, bytesRead);
+                    if (i < taskLimit) {
+
                         var findTask =Task.Run(()=>ProcessChunk(bytesBuffer, bytesRead, series, number));
-                        tasks[i] = findTask;
-                        i++;
+
+                        tasks[i++] = findTask;
                     } else {
-                        var index = Task.WaitAny(tasks);
+                         index = Task.WaitAny(tasks);
+
                         (string[] problemRows, int matches) = tasks[index].Result;
                         match += matches;
-                        byte[] bytesBuffer = new byte[bytesRead];
-                        Array.Copy(buffer, 0, bytesBuffer, 0, bytesRead);
+                        
                         tasks[index] = Task.Run(() => ProcessChunk(bytesBuffer, bytesRead, series, number));
                     }
                     buffer = new byte[chunkSize];
+                }
+                Task.WaitAll(tasks);
+                for (int l = 0; l < tasks.Length; l++) {
+                    if (l == index) {
+                        continue;
+                    }
+                    (string[] problemRows, int matches) = tasks[l].Result;
+                    match += matches;
                 }
             }
             return match;
