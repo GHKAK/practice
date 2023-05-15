@@ -13,8 +13,9 @@ namespace FindBenchmark {
         }
 
         [Benchmark]
-        public void BencmarkFindAsync() {
-            Tests.FoundCorrectAsyncTest();
+        public async Task<int> BenchmarkFindAsync() {
+            await Tests.FoundCorrectAsyncTest();
+            return 1;
         }
     }
 }
