@@ -5,9 +5,9 @@ using System.CodeDom;
 
 namespace FindBenchmark {
     [MemoryDiagnoser]
-    public class FIndAsyncBenchmark {
+    public class FindAsyncBenchmark {
         public Tests Tests { get; set; }
-        public FIndAsyncBenchmark() {
+        public FindAsyncBenchmark() {
             Tests = new Tests();
         }
 
