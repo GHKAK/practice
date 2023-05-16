@@ -1,11 +1,15 @@
 ﻿using BenchmarkDotNet.Attributes;
 using NUnit.Framework;
 using PassportsTests;
+using System.CodeDom;
 
 namespace FindBenchmark {
     [MemoryDiagnoser]
     public class FIndAsyncBenchmark {
         public Tests Tests { get; set; }
+        public FIndAsyncBenchmark() {
+            Tests = new Tests();
+        }
 
         [GlobalSetup]
         public void SetupData() {

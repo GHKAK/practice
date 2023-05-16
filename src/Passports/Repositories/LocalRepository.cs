@@ -68,7 +68,7 @@ namespace Passports.Repositories {
                         Array.Resize(ref rows, rows.Length - 1);
                         addRow = true;
                     }
-                    match += MatchesInRows(rows, series, number);
+                    match += MatchesInRowsSplit(rows, series, number);
                 }
             }
             return match;
@@ -145,10 +145,10 @@ namespace Passports.Repositories {
                     }
                     match += MatchTaskRoutine(ref i, l);
                 }
-                var mergedConflicts = Task.Run(() => GetRowsList(ConflictsDictionary));
+                var mergedConflicts = Task.Run(() => GetConflictsRowsList(ConflictsDictionary));
                 mergedConflicts.Wait();
                 var list = mergedConflicts.Result;
-                match += FindInMatchesInConflicts(list, series, number);
+                match += MatchesEnumerableStrings(list, series, number);
             }
             return match;
         }
@@ -160,17 +160,8 @@ namespace Passports.Repositories {
             return matches;
         }
 
-        private int FindInMatchesInConflicts(List<string> conflicts, int series, int number) {
-            int matches = 0;
-            string matchString = series + "," + number;
-            for(int i = 0; i < conflicts.Count; i++) {
-                if(conflicts[i] == matchString) {
-                    matches++;
-                }
-            }
-            return matches;
-        }
-        private List<string> GetRowsList(Dictionary<int, string[]> conflicts) {
+        
+        private List<string> GetConflictsRowsList(Dictionary<int, string[]> conflicts) {
             List<string> rows = new List<string>();
             for(int i = 0; i < conflicts.Count; i++) {
                 string firstRow = conflicts[i][0];
@@ -189,7 +180,7 @@ namespace Passports.Repositories {
         }
         private (string[], int) ProcessChunk(byte[] buffer, int bytesRead, int series, int number) {
             var rows = GetRowsFromBytes(buffer);
-            var matches = MatchesInRowsCutted(rows, series, number);
+            var matches = MatchesEnumerableStrings(rows, series, number);
             var problemRows = ProblemRows(rows);
             return (problemRows, matches);
         }
@@ -198,20 +189,31 @@ namespace Passports.Repositories {
             string[] rows = GetRowsFromChunk(chunk);
             return rows;
         }
-        private int MatchesInRowsCutted(string[] rows, int series, int number) {
+        private int MatchesInConflicts(List<string> conflicts, int series, int number) {
+            int matches = 0;
+            string matchString = series + "," + number;
+            for (int i = 0; i < conflicts.Count; i++) {
+                if (conflicts[i] == matchString) {
+                    matches++;
+                }
+            }
+            return matches;
+        }
+        private int MatchesInRowsStringCompare(string[] rows, int series, int number) {
+            int matches = 0;
+            string matchString = $"{series},{number}";
+            for (int i = 1; i < rows.Length - 1; i++) {
+                if (rows[i] == matchString) {
+                    matches++;
+                }
+            }
+            return matches;
+        }
+        private int MatchesEnumerableStrings(IEnumerable<string> rows, int series, int number) {
             int match = 0;
-            int seriesData, numberData;
-            for(int i = 1; i < rows.Length - 1; i++) {
-                var row = rows[i];
-                var passportData = row.Split(",");
-                if(passportData.Length != 2) {
-
-                }
-                if(!int.TryParse(passportData[0], out seriesData)
-                    || !int.TryParse(passportData[1], out numberData)) {
-                    continue;
-                }
-                if(series == seriesData && number == numberData) {
+            string matchString = $"{series},{number}";
+            foreach (string row in rows) {
+                if (row == matchString) {
                     match++;
                 }
             }
@@ -224,12 +226,12 @@ namespace Passports.Repositories {
             return replaceRows;
         }
         private string[] GetRowsFromChunk(string chunk) {
-            return chunk.Trim('\n').Split("\n");
+            return chunk.Split("\n");
         }
         private void AddRemainedRow(string[] rows, string remainedRow) {
             rows[0] = remainedRow + rows[0];
         }
-        public int MatchesInRows(string[] rows, int series, int number) {
+        public int MatchesInRowsSplit(string[] rows, int series, int number) {
             int match = 0;
             int seriesData, numberData;
             foreach(var row in rows) {
