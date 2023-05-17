@@ -18,10 +18,8 @@ public class LocalRepositoryNew {
         int lastTaskIndex = 0;
         int bufferIndex = 0;
         Tasks = new Task<int>[taskLimit];
-        ConflictsDictionary = new();
-        TasksOrderMap = new();
         byte[] passportSearchBytes = Encoding.UTF8.GetBytes(series.ToString() + "," + number.ToString() + "\n");
-        using (FileStream fs = new FileStream(_csvFileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.None, 262144)) {
+        using (FileStream fs = new FileStream(_csvFileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.None, chunkSize)) {
             Memory<byte> buffer = new Memory<byte>(new byte[headersOffset]);
             bytesRead = await fs.ReadAsync(buffer);
             var buffers = new Memory<byte>[taskLimit+1];

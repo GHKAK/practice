@@ -17,7 +17,6 @@ namespace PassportsTests {
         public async Task FoundInMemoryCorrect() {
             int actualMatches = await _localRepositoryNew.FindInChunksAsync(9201, 335501);
             int expectedMatches = 1;
-
             Assert.AreEqual(expectedMatches, actualMatches);
         }
         [Test]
