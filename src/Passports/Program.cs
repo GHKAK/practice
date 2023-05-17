@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PassportContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("postgresPassports")));
 builder.Services.AddTransient<LocalRepository>();
 builder.Services.AddTransient<PostgresRepository>();
+builder.Services.AddTransient<LocalRepositoryNew>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

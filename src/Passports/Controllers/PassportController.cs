@@ -7,11 +7,14 @@ namespace Passports.Controllers {
     [Route("[controller]")]
     public class PassportController : ControllerBase {
         private LocalRepository _localRepository;
+        private LocalRepositoryNew _localRepositoryNew;
+
         private PostgresRepository _postgresRepository;
         readonly Stopwatch sw = new();
-        public PassportController(LocalRepository localRepository, PostgresRepository postgresRepository) {
+        public PassportController(LocalRepository localRepository, PostgresRepository postgresRepository, LocalRepositoryNew localRepositoryNew) {
             _localRepository = localRepository;
             _postgresRepository = postgresRepository;
+            _localRepositoryNew = localRepositoryNew;
         }
 
         [HttpGet("FindInChunk")]
@@ -26,7 +29,15 @@ namespace Passports.Controllers {
         public async Task<IActionResult> FindInChunksAsync(int series, int number) {
             //_localRepository.DecompressFile();
             sw.Restart();
-            var matches = await _localRepository.FindInChunksAsync(series, number);
+            var matches = await _localRepositoryNew.FindInChunksAsync(series, number);
+            sw.Stop();
+            return Ok($"{matches} Founded   in {sw.Elapsed} seconds");
+        }
+        [HttpGet("FindInMemories")]
+        public async Task<IActionResult> FindInMemories(int series, int number) {
+            //_localRepository.DecompressFile();
+            sw.Restart();
+            var matches = await _localRepositoryNew.FindInChunksAsync(series, number);
             sw.Stop();
             return Ok($"{matches} Founded   in {sw.Elapsed} seconds");
         }

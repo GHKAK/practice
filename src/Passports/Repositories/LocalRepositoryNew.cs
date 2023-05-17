@@ -8,65 +8,42 @@ public class LocalRepositoryNew {
     private Task<int>[] Tasks { get; set; }
     private Dictionary<int, string[]> ConflictsDictionary { get; set; }
     private Dictionary<int, int> TasksOrderMap { get; set; }
-    private const int taskLimit = 15;
+    private const int taskLimit = 5;
     public async Task<int> FindInChunksAsync(int series, int number) {
         int chunkSize = 120000;
         int headersOffset = 26;
+        int bytesRead;
         int match = 0;
+        int readIndex = 0;
+        int lastTaskIndex = 0;
+        int bufferIndex = 0;
         Tasks = new Task<int>[taskLimit];
         ConflictsDictionary = new();
         TasksOrderMap = new();
+        byte[] passportSearchBytes = Encoding.UTF8.GetBytes(series.ToString() + "," + number.ToString() + "\n");
         using (FileStream fs = new FileStream(_csvFileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.None, 262144)) {
             Memory<byte> buffer = new Memory<byte>(new byte[headersOffset]);
-            int bytesRead;
             bytesRead = await fs.ReadAsync(buffer);
-            buffer = new Memory<byte>(new byte[chunkSize]);
-            int i = 0;
-            int index = 0;
-            //byte[] passportSearchBytes = Encoding.UTF8.GetBytes(series.ToString() + "," + number.ToString() + "\n");
-            byte[] passportSearchBytes = new byte[2];
-            passportSearchBytes[0] = 57;
-            passportSearchBytes[1] = 50;
-            //passportSearchBytes[2] = 48;
-            //passportSearchBytes[3] = 48;
-            //passportSearchBytes[4] = 44;
-            //passportSearchBytes[5] = 48;
-            //passportSearchBytes[6] = 57;
-            //passportSearchBytes[7] = 54;
-            //passportSearchBytes[8] = 56;
-            //passportSearchBytes[9] = 51;
-            //passportSearchBytes[10] = 50;
+            var buffers = new Memory<byte>[taskLimit+1];
+            for (int k = 0; k < buffers.Length; k++) {
+                buffers[k] = new Memory<byte>(new byte[chunkSize]);
+            } 
 
-
-
-            while ((bytesRead = await fs.ReadAsync(buffer)) > 0) {
-                if (i < taskLimit) {
-                    var findTask = Task.Run(() => GetMatchesFromBuffer(buffer, passportSearchBytes));
-                    Tasks[i] = findTask;
-                    i++;
-                    //var findTask = Task.Run(() => ProcessChunk(bytesBuffer, bytesRead, series, number));
-                    //Tasks[i] = findTask;
-                    //TasksOrderMap.Add(i, i);
-                    //i++;
+            while ((bytesRead = await fs.ReadAsync(buffers[bufferIndex])) > 0) {
+                if (readIndex < taskLimit) {
+                    var findTask = Task.Run(() => GetMatchesFromBuffer(buffers[bufferIndex].Span, passportSearchBytes));
+                    Tasks[readIndex] = findTask;
+                    readIndex++;
+                    bufferIndex = readIndex;
                 } else {
-                    index = Task.WaitAny(Tasks);
-                    match += MatchTaskRoutine(ref i, index);
-                    Tasks[index] = Task.Run(() => GetMatchesFromBuffer(buffer, passportSearchBytes));
+                    lastTaskIndex = Task.WaitAny(Tasks);
+                    match += MatchTaskRoutine(ref readIndex, lastTaskIndex);
+                    if (lastTaskIndex >= 5) { 
+                    }
+                    bufferIndex = lastTaskIndex;
+                    Tasks[lastTaskIndex] = Task.Run(() => GetMatchesFromBuffer(buffers[bufferIndex].Span, passportSearchBytes));
                 }
-                buffer = new Memory<byte>(new byte[chunkSize]);
             }
-
-            //Task.WaitAll(Tasks);
-            //for (int l = 0; l < Tasks.Length; l++) {
-            //    if (l == index) {
-            //        continue;
-            //    }
-            //    match += MatchTaskRoutine(ref i, l);
-            //}
-            //var mergedConflicts = Task.Run(() => GetConflictsRowsList(ConflictsDictionary));
-            //mergedConflicts.Wait();
-            //var list = mergedConflicts.Result;
-            //match += MatchesEnumerableStringCompare(list, series, number);
         }
         return match;
     }
@@ -75,7 +52,7 @@ public class LocalRepositoryNew {
         i++;
         return matches;
     }
-    private int GetMatchesFromBuffer(Memory<byte> buffer, byte[] searchPassport) {
+    private int GetMatchesFromBuffer(Span<byte> buffer, byte[] searchPassport) {
         int matches = 0;
         int bufferIndex = 0;
         while (bufferIndex < buffer.Length) {
@@ -83,16 +60,16 @@ public class LocalRepositoryNew {
                 bufferIndex += buffer.Length;
                 break;
             }
-            for (int i = 0; i < searchPassport.Length; i++) {
-                if (buffer.Span[bufferIndex + i] == searchPassport[i]) {
-                    if (i == searchPassport.Length - 1) {
+            for (int overlapCount = 0; overlapCount < searchPassport.Length; overlapCount++) {
+                if (buffer[bufferIndex + overlapCount] == searchPassport[overlapCount]) {
+                    if (overlapCount == searchPassport.Length - 1) {
                         matches++;
-                        bufferIndex += i;
+                        bufferIndex += overlapCount;
                         break;
                     }
                     continue;
                 } else {
-                    bufferIndex += i + 1;
+                    bufferIndex += overlapCount + 1;
                     break;
                 }
             }

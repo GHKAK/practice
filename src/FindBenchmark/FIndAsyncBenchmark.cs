@@ -15,11 +15,15 @@ namespace FindBenchmark {
         public void SetupData() {
             Tests = new Tests();
         }
-
         [Benchmark]
-        public async Task<int> BenchmarkFindAsync() {
-            await Tests.FoundCorrectAsyncTest();
+        public async Task<int> BenchmarkFindInMemoryAsync() {
+            await Tests.FoundInMemoryCorrect();
             return 1;
         }
+        //[Benchmark]
+        //public async Task<int> BenchmarkFindAsync() {
+        //    await Tests.FoundCorrectAsyncTest();
+        //    return 1;
+        //}
     }
 }
