@@ -11,7 +11,7 @@ using Passports.Models;
 namespace Passports.Migrations
 {
     [DbContext(typeof(PassportContext))]
-    [Migration("20230511091419_init")]
+    [Migration("20230518093429_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -26,8 +26,8 @@ namespace Passports.Migrations
 
             modelBuilder.Entity("Passports.Models.Passport", b =>
                 {
-                    b.Property<int>("Series")
-                        .HasColumnType("integer");
+                    b.Property<short>("Series")
+                        .HasColumnType("smallint");
 
                     b.Property<int>("Number")
                         .HasColumnType("integer");

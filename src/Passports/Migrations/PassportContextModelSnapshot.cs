@@ -23,8 +23,8 @@ namespace Passports.Migrations
 
             modelBuilder.Entity("Passports.Models.Passport", b =>
                 {
-                    b.Property<int>("Series")
-                        .HasColumnType("integer");
+                    b.Property<short>("Series")
+                        .HasColumnType("smallint");
 
                     b.Property<int>("Number")
                         .HasColumnType("integer");
