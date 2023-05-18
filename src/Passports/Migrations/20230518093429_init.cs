@@ -14,7 +14,7 @@ namespace Passports.Migrations
                 name: "Passports",
                 columns: table => new
                 {
-                    Series = table.Column<int>(type: "integer", nullable: false),
+                    Series = table.Column<short>(type: "smallint", nullable: false),
                     Number = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>

@@ -29,7 +29,7 @@ namespace Passports.Controllers {
         public async Task<IActionResult> FindInChunksAsync(int series, int number) {
             //_localRepository.DecompressFile();
             sw.Restart();
-            var matches = await _localRepositoryNew.FindInChunksAsync(series, number);
+            var matches = await _localRepository.FindInChunksAsync(series, number);
             sw.Stop();
             return Ok($"{matches} Founded   in {sw.Elapsed} seconds");
         }
