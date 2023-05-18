@@ -7,9 +7,9 @@ namespace Passports.Data;
 public class UnitOfWork :IUnitOfWork {
     private readonly PassportContext _context;
     public IPassportRepository Passports { get; private set; }
-    public UnitOfWork(PassportContext context) {
+    public UnitOfWork(PassportContext context, PassportRepository passports) {
         _context = context;
-        Passports = new PassportRepository(context);
+        Passports = passports;
     }
     public async Task CompleteAsync() {
         await _context.SaveChangesAsync();

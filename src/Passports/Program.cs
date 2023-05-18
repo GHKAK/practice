@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PassportContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("postgresPassports")));
+builder.Services.AddScoped<PassportRepository>();
 builder.Services.AddTransient<LocalRepository>();
 builder.Services.AddTransient<PostgresRepository>();
 builder.Services.AddTransient<LocalRepositoryNew>();

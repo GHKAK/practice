@@ -1,8 +1,10 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Buffers;
+using System.Runtime.InteropServices;
 using Microsoft.EntityFrameworkCore;
 using Passports.Models;
 using Passports.Repositories.Interfaces;
 using System.Text;
+using Passports.Data;
 
 namespace Passports.Repositories;
 
@@ -13,9 +15,13 @@ public class PassportRepository : GenericRepository<Passport>, IPassportReposito
     private Task<List<Passport>>[] Tasks { get; set; }
     private Dictionary<int, string[]> ConflictsDictionary { get; set; }
     private Dictionary<int, int> TasksOrderMap { get; set; }
-    private const int taskLimit = 5;
+    private const int _taskLimit = 5;
+    private MemoryPool _memoryPool;
+    private const int _chunkSize = 12000000;
     private int all = 0;
+
     public PassportRepository(PassportContext context) : base(context) {
+        _memoryPool = new MemoryPool(_taskLimit + 1, _chunkSize);
     }
 
     public override async Task<IEnumerable<Passport>> All() {
@@ -37,25 +43,25 @@ public class PassportRepository : GenericRepository<Passport>, IPassportReposito
     }
 
     public async Task<bool> MigrateFromFile() {
-        int chunkSize = 120000;
         int headersOffset = 26;
         int bytesRead;
         int match = 0;
         int readIndex = 0;
         int lastTaskIndex = 0;
         int bufferIndex = 0;
-        Tasks = new Task<List<Passport>>[taskLimit];
-        using (FileStream fs = new FileStream(_csvFileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.None, chunkSize, useAsync:true)) {
+        Tasks = new Task<List<Passport>>[_taskLimit];
+        using (FileStream fs = new FileStream(_csvFileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.None,
+                   _chunkSize, useAsync: true)) {
             Memory<byte> buffer = new Memory<byte>(new byte[headersOffset]);
             bytesRead = await fs.ReadAsync(buffer);
-            var buffers = new Memory<byte>[taskLimit + 1];
-            for (int k = 0; k < buffers.Length; k++) {
-                buffers[k] = new Memory<byte>(new byte[chunkSize]);
-            }
+            var buffers = new List<Memory<byte>>();
 
-            while ((bytesRead = await fs.ReadAsync(buffers[bufferIndex])) > 0) {
-                if (readIndex < taskLimit) {
-                    var findTask = Task.Run(() => ParseChunk(buffers[bufferIndex].Span));
+            var bufferCurrent = _memoryPool.GetMemory();
+            while ((bytesRead = await fs.ReadAsync(bufferCurrent)) > 0) {
+                var bufferTransfer = bufferCurrent;
+                if (readIndex < _taskLimit) {
+                    var findTask = Task.Run(() => ParseChunk(bufferTransfer.Span));
+                    buffers.Add(bufferCurrent);
                     Tasks[readIndex] = findTask;
                     readIndex++;
                     bufferIndex = readIndex;
@@ -63,14 +69,13 @@ public class PassportRepository : GenericRepository<Passport>, IPassportReposito
                     all++;
                     lastTaskIndex = Task.WaitAny(Tasks);
                     MatchTaskRoutine(ref readIndex, lastTaskIndex);
-                    if (lastTaskIndex >= 5) {
-                    }
-
                     bufferIndex = lastTaskIndex;
-                    Tasks[lastTaskIndex] = Task.Run(() => ParseChunk(buffers[bufferIndex].Span));
-                    lastTaskIndex = Task.WaitAny(Tasks);
-                    MatchTaskRoutine(ref readIndex, lastTaskIndex);
+                    _memoryPool.ReturnMemory(buffers[lastTaskIndex]);
+                    Tasks[lastTaskIndex] = Task.Run(() => ParseChunk(bufferTransfer.Span));
+                    buffers[lastTaskIndex] = bufferTransfer;
                 }
+
+                bufferCurrent = _memoryPool.GetMemory();
             }
         }
 
@@ -79,7 +84,8 @@ public class PassportRepository : GenericRepository<Passport>, IPassportReposito
 
     private void MatchTaskRoutine(ref int i, int taskIndex) {
         var passports = Tasks[taskIndex].Result;
-        //FillDatabase(passports);
+        FillDatabase(passports);
+        
     }
 
     private List<Passport> ParseChunk(Span<byte> buffer) {
@@ -88,29 +94,12 @@ public class PassportRepository : GenericRepository<Passport>, IPassportReposito
         int lastPassportEnds = buffer.LastIndexOf((byte)'\n');
         int commapos = 0;
         int passportStart = firstPassportStart;
-        var bufferEnter = Encoding.UTF8.GetString(buffer.Slice(0, 1));
         bool isReplaced = false;
         for (int i = firstPassportStart; i < lastPassportEnds; i++) {
             if (buffer[i] == (byte)',') {
                 commapos = i;
             }
-
-            if (i > 0) {
-                var bufferCurrent =  Encoding.UTF8.GetString(buffer.Slice(0, 1));
-                if (bufferEnter != bufferCurrent) {
-                    isReplaced = true;
-                }
-            }
-
-            string ErrorString;
-            if (i > 10 && i < lastPassportEnds - 10) {
-                ErrorString=Encoding.UTF8.GetString(buffer.Slice(i-10, 20));
-            }
-
             if (buffer[i] == (byte)'\n') {
-                if (commapos < passportStart) {
-                }
-
                 var seriesString = Encoding.UTF8.GetString(buffer.Slice(passportStart, commapos - passportStart));
                 var numberString = Encoding.UTF8.GetString(buffer.Slice(commapos + 1, i - commapos - 1));
                 short series = 0;
@@ -121,15 +110,12 @@ public class PassportRepository : GenericRepository<Passport>, IPassportReposito
 
                 passportStart = i + 1;
             }
-
         }
         return passports;
     }
 
-    private void FillDatabase(List<Passport> passports) {
-        foreach (var passport in passports) {
-            _context.Passports.Add(passport);
-            _context.SaveChangesAsync();
-        }
+    private void FillDatabase(List<Passport> passports) { 
+        _context.Passports.AddRange(passports); 
+        _context.SaveChanges();
     }
 }
