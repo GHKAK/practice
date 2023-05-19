@@ -3,8 +3,9 @@
 namespace Passports.Models {
     public class PassportContext : DbContext {
         public DbSet<Passport> Passports { get; set; }
-        public PassportContext(DbContextOptions<PassportContext> options) : base(options) {
 
+
+        public PassportContext(DbContextOptions<PassportContext> options) : base(options) {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {

@@ -21,4 +21,11 @@ public class PassportUovController : ControllerBase {
         await _unitOfWork.Passports.MigrateFromFile();
         return Ok();
     }
+
+    [HttpGet("GetPassportBySeriesNumber")]
+    public async Task<IActionResult> GetPassportBySeriesNumber(short series, int number) {
+        sw.Restart();
+        var passport = await _unitOfWork.Passports.GetBySeriesNumber(series, number);
+        return Ok($"{passport.Series} {passport.Number} {sw.Elapsed}");
+    }
 }

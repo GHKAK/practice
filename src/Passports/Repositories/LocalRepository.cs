@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 
 namespace Passports.Repositories {
-    public class LocalRepository : IRepository {
+    public class LocalRepository  {
         private FileInfo _bzFileInfo = new FileInfo($@"C:\Users\{System.Environment.UserName}\Downloads\list_of_expired_passports.csv.bz2");
         private FileInfo _csvFileInfo = new FileInfo($@"C:\Users\{System.Environment.UserName}\Downloads\list_of_expired_passports.csv");
         private List<Passport> _records = new();

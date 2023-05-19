@@ -6,7 +6,7 @@ namespace Passports.Models {
             Series = series;
             Number = number;
         }
-        public short Series { get; private set; }
-        public int Number { get; private set; }
+        public short Series { get;  set; }
+        public int Number { get;  set; }
     }
 }

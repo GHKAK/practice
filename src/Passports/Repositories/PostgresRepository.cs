@@ -1,30 +1,15 @@
-﻿using Passports.Models;
+﻿using System.Buffers;
+using System.Runtime.InteropServices;
+using Microsoft.EntityFrameworkCore;
+using Passports.Models;
+using Passports.Repositories.Interfaces;
+using System.Text;
+using Passports.Data;
 
-namespace Passports.Repositories {
-    public class PostgresRepository : IRepository {
-        private PassportContext _context;
-        public PostgresRepository(PassportContext context) {
-            _context = context;
-        }
-        public List<Passport> ReadAll() {
-            return _context.Passports.ToList();
-        }
-        public void WriteAll(List<Passport> passports) {
-            int chunkLength = 100000;
-            int totalPassports = passports.Count;
-            for (int i = 0; i < totalPassports; i += chunkLength) {
-                int remainingPassports = totalPassports - i;
-                int passportsToAdd = Math.Min(chunkLength, remainingPassports);
+namespace Passports.Repositories;
 
-                for (int j = i; j < i + passportsToAdd; j++) {
-                    try {
-                        _context.Passports.Add(passports[j]);
-                    } catch {
-                    }
-                }
-
-                _context.SaveChanges();
-            }
-        }
+public class PostgresRepository : DbRepository, IPassportRepository {
+    public PostgresRepository(PassportContext context) : base(context) {
     }
+    
 }

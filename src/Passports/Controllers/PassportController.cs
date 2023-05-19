@@ -9,11 +9,10 @@ namespace Passports.Controllers {
         private LocalRepository _localRepository;
         private LocalRepositoryNew _localRepositoryNew;
 
-        private PostgresRepository _postgresRepository;
+        //private PostgresRepository _postgresRepository;
         readonly Stopwatch sw = new();
-        public PassportController(LocalRepository localRepository, PostgresRepository postgresRepository, LocalRepositoryNew localRepositoryNew) {
+        public PassportController(LocalRepository localRepository, LocalRepositoryNew localRepositoryNew) {
             _localRepository = localRepository;
-            _postgresRepository = postgresRepository;
             _localRepositoryNew = localRepositoryNew;
         }
 
@@ -48,18 +47,6 @@ namespace Passports.Controllers {
             var count = await _localRepository.CountFileAsync();
             sw.Stop();
             return Ok($"{count} Readed");
-        }
-        [HttpGet("WriteToPostgres")]
-        public IActionResult WriteToPostgres() {
-            var passports = _localRepository.ReadAll();
-            _postgresRepository.WriteAll(passports);
-            return Ok();
-        }
-
-        [HttpGet("ReadFromPostgres")]
-        public IActionResult ReadFromPostgres() {
-            var passports = _postgresRepository.ReadAll();
-            return Ok(passports.Count);
         }
         [HttpGet("GetLinesCountAsync1")]
         public async Task<IActionResult> GetLinesCountAsync1() {
