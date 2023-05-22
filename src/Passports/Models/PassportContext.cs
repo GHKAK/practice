@@ -12,6 +12,8 @@ namespace Passports.Models {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Passport>()
                 .HasKey(passport => new { passport.Series,passport.Number });
+            modelBuilder.Entity<Passport>()
+                .HasIndex(passport => passport.IsActual);
         }
     }
 }

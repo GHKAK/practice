@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Passports.Data;
 using Passports.Models;
 using Passports.Repositories.Interfaces;
@@ -44,12 +45,19 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
 
     public async Task<Passport?> GetBySeriesNumber(short series, int number) {
         try {
-            return await _context.Passports.FindAsync(series, number);
+            var passports =   await _context.Passports.Where(x=>x.Series==series && x.Number==number).ToListAsync();
+            return passports.ElementAt(0);
         } catch (Exception e) {
             Console.WriteLine(e);
             throw;
         }
     }
+
+    public async Task<int> CountActual(bool isActual) {
+        var count = await _context.Passports.CountAsync(x => x.IsActual==isActual);
+        return count;
+    }
+
 
     public async Task<bool> MigrateFromFile() {
         _readIndex = 0;

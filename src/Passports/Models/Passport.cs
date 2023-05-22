@@ -6,7 +6,9 @@ namespace Passports.Models {
             Series = series;
             Number = number;
         }
+  
         public short Series { get;  set; }
         public int Number { get;  set; }
+        public bool IsActual { get; set; }
     }
 }

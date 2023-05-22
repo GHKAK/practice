@@ -11,8 +11,8 @@ using Passports.Models;
 namespace Passports.Migrations
 {
     [DbContext(typeof(PassportContext))]
-    [Migration("20230518093429_init")]
-    partial class init
+    [Migration("20230522141154_init3")]
+    partial class init3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,7 +32,12 @@ namespace Passports.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsActual")
+                        .HasColumnType("boolean");
+
                     b.HasKey("Series", "Number");
+
+                    b.HasIndex("IsActual");
 
                     b.ToTable("Passports");
                 });

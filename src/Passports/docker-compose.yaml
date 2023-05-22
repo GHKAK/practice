@@ -7,6 +7,10 @@
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
       POSTGRES_DB: test_db
+    command:
+        - "postgres"
+        - "-c"
+        - "log_statement=all"
     ports:
       - "5432:5432"
   pgadmin:

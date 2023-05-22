@@ -25,13 +25,23 @@ public class PassportUovController : ControllerBase {
     [HttpGet("GetPassportBySeriesNumber")]
     public async Task<IActionResult> GetPassportBySeriesNumber(short series, int number) {
         sw.Restart();
-        
-        var passport = await _unitOfWork.Passports.GetBySeriesNumber(series, number); 
-        sw.Stop();
-        if (passport != null) {
 
+        sw.Stop();
+        try {
+            var passport = await _unitOfWork.Passports.GetBySeriesNumber(series, number);
             return Ok($"{passport.Series} {passport.Number} {sw.Elapsed}");
+        } catch (Exception e) {
+            Console.WriteLine(e);
+            return NotFound("This passport doesn't exist in db");
         }
-        return NotFound("This passport doesn't exist in db");
+    }
+
+    [HttpGet("GetActiveUnactiveCount")]
+    public async Task<IActionResult> GetActiveUnactiveCount() {
+        sw.Restart();
+        var countActual = await _unitOfWork.Passports.CountActual(true);
+        var countNotActual = await _unitOfWork.Passports.CountActual(false);
+        sw.Stop();
+        return Ok($"{countActual} active and {countNotActual} passports found in {sw.Elapsed}");
     }
 }
