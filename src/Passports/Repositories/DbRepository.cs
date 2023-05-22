@@ -20,7 +20,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
     private List<List<Passport>> _listPool;
     private List<Memory<byte>> _buffers;
     private const int ChunkSize = 6000000;
-    private protected int _readIndex = 0;
+    private int _readIndex = 0;
 
     public DbRepository(PassportContext context) : base(context) {
         Tasks = new Task<(List<Passport>, ConflictStrings)>[TaskLimit];
@@ -72,7 +72,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
                     TasksOrderMap.Add(_readIndex, _readIndex);
                 } else {
                     lastTaskIndex = Task.WaitAny(Tasks);
-                    await MatchTaskRoutine(lastTaskIndex);
+                    await EndTaskRoutine(lastTaskIndex);
                     _memoryPool.ReturnMemory(_buffers[lastTaskIndex]);
                     StartTask(lastTaskIndex, bufferTransfer);
                 }
@@ -97,12 +97,12 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
             var nextConflict = ConflictsDictionary.GetValueOrDefault(i);
             try {
                 passports.Add(GetPassportFromString(prevConflict.End + nextConflict.Start));
-
             } catch (Exception e) {
                 Console.WriteLine(e);
                 throw;
             }
-            prevConflict = nextConflict; 
+
+            prevConflict = nextConflict;
         }
 
         await FillDatabase(passports);
@@ -115,6 +115,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
         if (short.TryParse(splitted[0], out series) && int.TryParse(splitted[1], out number)) {
             return new Passport(series, number);
         }
+
         throw new ArgumentException("Not correct data in string");
     }
 
@@ -125,7 +126,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
         _buffers[lastTaskIndex] = bufferTransfer;
     }
 
-    private async Task MatchTaskRoutine(int taskIndex) {
+    private async Task EndTaskRoutine(int taskIndex) {
         (var passports, var conflict) = Tasks[taskIndex].Result;
         ConflictsDictionary.Add(TasksOrderMap[taskIndex], conflict);
         await FillDatabase(passports);
@@ -134,11 +135,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
     private async Task ProcessLastTasks(int lastTaskIndex) {
         Task.WaitAll(Tasks);
         for (int l = 0; l < Tasks.Length; l++) {
-            if (l == lastTaskIndex) {
-                continue;
-            }
-
-            await MatchTaskRoutine(l);
+            await EndTaskRoutine(l);
             _readIndex++;
         }
     }
