@@ -115,7 +115,6 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
         if (short.TryParse(splitted[0], out series) && int.TryParse(splitted[1], out number)) {
             return new Passport(series, number);
         }
-
         throw new ArgumentException("Not correct data in string");
     }
 
