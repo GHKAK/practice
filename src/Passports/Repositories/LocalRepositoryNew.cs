@@ -69,6 +69,13 @@ public class LocalRepositoryNew {
         }
         return matches;
     }
+    private int MatchTaskRoutine(ref int i, int taskIndex) {
+        (int matches, ConflictBytes conflict) = Tasks[taskIndex].Result;
+        ConflictsDictionary.Add(TasksOrderMap[taskIndex], conflict);
+        TasksOrderMap[taskIndex] = i;
+        i++;
+        return matches;
+    }
     private int MatchesInConflicts(byte[] searchArray) {
         int matches = 0;
         var prevConflict = ConflictsDictionary.GetValueOrDefault(0);
@@ -98,13 +105,7 @@ public class LocalRepositoryNew {
             matches += MatchTaskRoutine(ref readIndex, l);
         }
     }
-    private int MatchTaskRoutine(ref int i, int taskIndex) {
-        (int matches, ConflictBytes conflict) = Tasks[taskIndex].Result;
-        ConflictsDictionary.Add(TasksOrderMap[taskIndex], conflict);
-        TasksOrderMap[taskIndex] = i;
-        i++;
-        return matches;
-    }
+
     private int GetMatchesFromBuffer(byte[] buffer, byte[] searchPassport) {
         int matches = 0;
         int bufferIndex = 0;
