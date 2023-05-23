@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Passports.Models;
 
-namespace Passports.Models {
+namespace Passports.Data {
     public class PassportContext : DbContext {
         public DbSet<Passport> Passports { get; set; }
 

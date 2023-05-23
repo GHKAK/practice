@@ -8,7 +8,7 @@ namespace Passports.Data;
 public class UnitOfWork :IUnitOfWork {
     private readonly PassportContext _context;
     public IPassportRepository Passports { get; private set; }
-    public UnitOfWork(PassportContext context, PostgresRepository passports) {
+    public UnitOfWork(PassportContext context, IPassportRepository passports) {
         _context = context;
         Passports = passports;
     }

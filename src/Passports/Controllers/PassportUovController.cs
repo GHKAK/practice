@@ -25,13 +25,10 @@ public class PassportUovController : ControllerBase {
     [HttpGet("GetPassportBySeriesNumber")]
     public async Task<IActionResult> GetPassportBySeriesNumber(short series, int number) {
         sw.Restart();
-
-        sw.Stop();
         try {
             var passport = await _unitOfWork.Passports.GetBySeriesNumber(series, number);
             return Ok($"{passport.Series} {passport.Number} {sw.Elapsed}");
-        } catch (Exception e) {
-            Console.WriteLine(e);
+        } catch {
             return NotFound("This passport doesn't exist in db");
         }
     }

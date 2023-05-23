@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Passports.Data;
 using Passports.Models;
@@ -5,13 +6,22 @@ using Passports.Repositories;
 using Passports.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Configuration.AddUserSecrets("ea88d7a2-ed79-45f4-b3a9-0e4670cbe894");   
 // Add services to the container.
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PassportContext>(opt => {
     opt.UseNpgsql(builder.Configuration.GetConnectionString("postgresPassports"));
-    opt.LogTo(Console.WriteLine);
+    //opt.LogTo(Console.WriteLine);
 });
+//builder.Logging.AddConsole();
 builder.Services.AddScoped<PostgresRepository>();
+builder.Services.AddScoped<IPassportRepository, LoggingPassportRepository>(provider => {
+    var decoratedRepository = provider.GetService<PostgresRepository>();
+    var logger = LoggerFactory.Create(config =>
+    {
+        config.AddConsole();
+    }).CreateLogger("Program");
+    return new LoggingPassportRepository(decoratedRepository, logger);
+});
 builder.Services.AddScoped<LocalRepository>();
 builder.Services.AddScoped<LocalRepositoryNew>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
