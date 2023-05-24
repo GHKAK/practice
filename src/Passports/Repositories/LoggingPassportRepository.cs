@@ -17,15 +17,15 @@ public class LoggingPassportRepository : IPassportRepository {
     }
 
     public async Task<Passport?> GetBySeriesNumber(short series, int number) {
-        return await LogAndExecute(()=>_decoratedRepository.GetBySeriesNumber(series,number),MethodBase.GetCurrentMethod().Name);
+        return await LogAndExecute(()=>_decoratedRepository.GetBySeriesNumber(series,number),"GetBySeriesNumber");
     }
 
     public async Task<int> CountActual(bool isActual) {
-        return await LogAndExecute(()=>_decoratedRepository.CountActual(isActual),MethodBase.GetCurrentMethod().Name);
+        return await LogAndExecute(()=>_decoratedRepository.CountActual(isActual),"CountActual");
     }
 
     public async Task<bool> MigrateFromFile() {
-        return await LogAndExecute(_decoratedRepository.MigrateFromFile,MethodBase.GetCurrentMethod().Name);
+        return await LogAndExecute(_decoratedRepository.MigrateFromFile,"MigrateFromFile");
     }
     private async Task<T> LogAndExecute<T>(Func<Task<T>> method, string methodName)
     {

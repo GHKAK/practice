@@ -1,5 +1,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Passports;
+using Passports.Config;
 using Passports.Data;
 using Passports.Models;
 using Passports.Repositories;
@@ -15,13 +17,16 @@ builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PassportContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("postgresPassports"));
     //opt.LogTo(Console.WriteLine);
 });
+
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
 //builder.Logging.AddConsole();
 builder.Services.AddScoped<PostgresRepository>();
 builder.Services.AddScoped<IPassportRepository, LoggingPassportRepository>(provider => {
     var decoratedRepository = provider.GetService<PostgresRepository>();
     var logger =  new LoggerConfiguration()
         .WriteTo.Console()
-        .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new[]{new Uri("http://localhost:5601/")}))
+        .WriteTo.Elasticsearch(ConfigurationElastic.ConfigureElasticSink(builder.Configuration, environment))
         .CreateLogger();
     return new LoggingPassportRepository(decoratedRepository, logger);
 });

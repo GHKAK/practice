@@ -39,6 +39,6 @@ public class PassportUovController : ControllerBase {
         var countActual = await _unitOfWork.Passports.CountActual(true);
         var countNotActual = await _unitOfWork.Passports.CountActual(false);
         sw.Stop();
-        return Ok($"{countActual} active and {countNotActual} passports found in {sw.Elapsed}");
+        return Ok($"{countActual} active and {countNotActual} unactive passports found in {sw.Elapsed}");
     }
 }
