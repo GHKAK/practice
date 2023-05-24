@@ -43,6 +43,14 @@
       - elasticsearch
     ports:
       - 5601:5601
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - es-net
+    ports:
+      - 6379:6379
 networks:
   es-net:
     driver: bridge

@@ -34,16 +34,18 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
         }
     }
 
-    public override async Task<IEnumerable<Passport>> All() {
-        try {
-            return await _context.Passports.Select(x => x).ToListAsync();
-        } catch (Exception e) {
-            Console.WriteLine(e);
-            throw;
+    public DbRepository() {
+        Tasks = new Task<(List<Passport>, ConflictStrings)>[TaskLimit];
+        TasksOrderMap = new();
+        ConflictsDictionary = new();
+        _memoryPool = new MemoryPool(TaskLimit + 1, ChunkSize);
+        _listPool = new();
+        for (int i = 0; i < TaskLimit; i++) {
+            _listPool.Add(new List<Passport>(ChunkSize / 12));
         }
     }
 
-    public async Task<Passport?> GetBySeriesNumber(short series, int number) {
+    public virtual async Task<Passport?> GetBySeriesNumber(short series, int number) {
         try {
             var passports =   await _context.Passports.Where(x=>x.Series==series && x.Number==number).ToListAsync();
             return passports.ElementAt(0);
@@ -53,7 +55,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
         }
     }
 
-    public async Task<int> CountActual(bool isActual) {
+    public virtual async Task<int> CountActual(bool isActual) {
         var count = await _context.Passports.CountAsync(x => x.IsActual==isActual);
         return count;
     }
