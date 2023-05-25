@@ -20,7 +20,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
     private MemoryPool _memoryPool;
     private List<List<Passport>> _listPool;
     private List<Memory<byte>> _buffers;
-    private const int ChunkSize = 6000000;
+    private const int ChunkSize = 60000;
     private int _readIndex = 0;
 
     public DbRepository(PassportContext context) : base(context) {
