@@ -51,32 +51,17 @@
       - es-net
     ports:
       - 6379:6379
+  app:
+    container_name: AAAPASSPORTS
+    #image: 'base_final'
+    build:
+        context: .
+        dockerfile: Dockerfile
+    ports:
+      - 5000:80
+    environment:
+      - ConnectionStrings:postgresPassports=User ID=root;Password=root;Server=192.168.208.4;Port=5432;Database=passports
+      - ConnectionStrings:redis=127.0.0.1:6379
 networks:
   es-net:
-    driver: bridge
-#  elasticsearch:
-#    image: elasticsearch:7.8.1
-#    ports:
-#      - 9200:9200
-#    environment:
-#      discovery.type: 'single-node'
-      #xpack.security.enabled: 'true'
-      #xpack.security.enrollment.enabled: 'true'
-#      ELASTIC_PASSWORD: 'root'
-#  kibana:
-#    image: kibana:7.8.1
-#    volumes:
-#      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
-#    ports:
-#      - 5601:5601
-#  elasticsearch:
-#    container_name: es-container
-#    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.0
-#    environment:
-#      - xpack.security.enabled=false
-#      - "discovery.type=single-node"
-#    networks:
-#      - es-net
-#    ports:
-#      - 9200:9200
-    
+    driver: bridge    

@@ -61,8 +61,8 @@ public class RedisRepository : DbRepository {
                 activeCount++;
             } else {
                 unactiveCount++;
-            }
-            await db.SortedSetAddAsync(key, value, (double)dateNumber);
+            } 
+            db.SortedSetAddAsync(key, value, (double)dateNumber);
         }
         await db.StringIncrementAsync(ActiveCountKey, activeCount);
         await db.StringIncrementAsync(UnactiveCountKey,unactiveCount);
