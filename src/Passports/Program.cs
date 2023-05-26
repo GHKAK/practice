@@ -14,7 +14,7 @@ using StackExchange.Redis;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(opt =>
-ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("redis")));
+ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("redisPassports")));
 
 //var x = builder.Configuration.GetConnectionString("postgresPassports");
 //builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PassportContext>(opt =>

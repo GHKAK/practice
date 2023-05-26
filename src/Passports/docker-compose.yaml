@@ -57,11 +57,13 @@
     build:
         context: .
         dockerfile: Dockerfile
+    networks:
+      - es-net
     ports:
       - 5000:80
     environment:
       - ConnectionStrings:postgresPassports=User ID=root;Password=root;Server=192.168.208.4;Port=5432;Database=passports
-      - ConnectionStrings:redis=127.0.0.1:6379
+      - ConnectionStrings:redisPassports=redis:6379
 networks:
   es-net:
     driver: bridge    
