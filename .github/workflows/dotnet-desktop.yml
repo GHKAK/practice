@@ -1,0 +1,92 @@
+name: .NET
+
+on:
+  push:
+    branches: dev
+  pull_request:
+    types:
+      - labeled
+      - synchronize
+      - opened
+      - edited
+      - reopened
+      - unlocked
+      - ready_for_review
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0
+    - name: Restore dependencies
+      working-directory: src/Passports/
+      run: dotnet restore
+    - name: Build
+      working-directory: src/PassportsTests/
+      run: dotnet build --no-restore
+    - name: Test
+      working-directory: src/PassportsTests/
+      run: dotnet test --verbosity normal
+    - name: Publish
+      run: dotnet publish src/Passports/Passports.csproj -c Release 
+    - name: Upload API
+      uses: actions/upload-artifact@v2
+      with:
+        name: api
+        path: src/Passports/bin/Release/net7.0/publish/
+        
+  merge:
+    runs-on: ubuntu-latest
+    needs: upload-artifact
+    steps:
+    - name: Approve 
+      uses: hmarr/auto-approve-action@v3
+    - name: Pull Request MergeDelete to dev
+      uses: managedkaos/merge-pull-request@v2.2.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Merge to prod
+      uses: devmasx/merge-branch@master
+      with:
+        type: now
+        from_branch: dev
+        target_branch: prod
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  upload-artifact:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: api
+        path: ./dist
+    - name: Archive api content
+      uses: thedoctor0/zip-release@master
+      with:
+        filename: api.zip
+    - name: Create Release
+      id: create-new-release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release V${{ github.run_number }}
+        draft: false
+        prerelease: false
+    - name: Upload asset to GitHub Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+        asset_path: ./api.zip
+        asset_name: api-v${{ github.run_number }}.zip
+        asset_content_type: application/zip

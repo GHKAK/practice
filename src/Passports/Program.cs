@@ -13,34 +13,34 @@ using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(opt =>
-ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("redisPassports")));
+// builder.Services.AddSingleton<IConnectionMultiplexer>(opt =>
+// ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("redisPassports")));
 
-//var x = builder.Configuration.GetConnectionString("postgresPassports");
-//builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PassportContext>(opt =>
-//{
-//    opt.UseNpgsql(builder.Configuration.GetConnectionString("postgresPassports"));
-//    //opt.LogTo(Console.WriteLine);
-//});
+var x = builder.Configuration.GetConnectionString("postgresPassports");
+builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PassportContext>(opt =>
+{
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("postgresPassports"));
+    //opt.LogTo(Console.WriteLine);
+});
 
-//var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-//builder.Logging.AddConsole();
-//builder.Services.AddScoped<PostgresRepository>();
-//builder.Services.AddScoped<IPassportRepository, LoggingPassportRepository>(provider =>
-//{
-//    var decoratedRepository = provider.GetService<PostgresRepository>();
-//    var logger = new LoggerConfiguration()
-//        .WriteTo.Console()
-//        .WriteTo.Elasticsearch(ConfigurationElastic.ConfigureElasticSink(builder.Configuration, environment))
-//        .CreateLogger();
-//    return new LoggingPassportRepository(decoratedRepository, logger);
-//});
-//builder.Services.AddScoped<LocalRepository>();
-//builder.Services.AddScoped<LocalRepositoryNew>();
-//builder.Services.AddScoped<IUnitOfWork, UnitOfWorkContextDb>();
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+builder.Logging.AddConsole();
+builder.Services.AddScoped<PostgresRepository>();
+builder.Services.AddScoped<IPassportRepository, LoggingPassportRepository>(provider =>
+{
+    var decoratedRepository = provider.GetService<PostgresRepository>();
+    var logger = new LoggerConfiguration()
+        .WriteTo.Console()
+        .WriteTo.Elasticsearch(ConfigurationElastic.ConfigureElasticSink(builder.Configuration, environment))
+        .CreateLogger();
+    return new LoggingPassportRepository(decoratedRepository, logger);
+});
+builder.Services.AddScoped<LocalRepository>();
+builder.Services.AddScoped<LocalRepositoryNew>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWorkContextDb>();
 
-builder.Services.AddScoped<IPassportRepository, RedisRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWorkRedis>();
+// builder.Services.AddScoped<IPassportRepository, RedisRepository>();
+// builder.Services.AddScoped<IUnitOfWork, UnitOfWorkRedis>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
