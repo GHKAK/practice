@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -15,12 +16,19 @@ namespace Passports.Migrations
                 columns: table => new
                 {
                     Series = table.Column<short>(type: "smallint", nullable: false),
-                    Number = table.Column<int>(type: "integer", nullable: false)
+                    Number = table.Column<int>(type: "integer", nullable: false),
+                    IsActual = table.Column<bool>(type: "boolean", nullable: false),
+                    ChangeDate = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Passports", x => new { x.Series, x.Number });
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Passports_IsActual",
+                table: "Passports",
+                column: "IsActual");
         }
 
         /// <inheritdoc />

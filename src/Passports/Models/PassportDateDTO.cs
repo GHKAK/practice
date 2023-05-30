@@ -7,4 +7,8 @@ public struct PassportDateDTO {
         isActual = passport.IsActual;
         changeDate = passport.ChangeDate;
     }
+    public PassportDateDTO(IAuditablePassport passport) {
+        isActual = passport.IsActual;
+        changeDate = passport.ChangeDate;
+    }
 }

@@ -100,7 +100,12 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
     }
 
     public virtual async Task<List<PassportDateDTO>> GetPassportHistory(short series, int number) {
-        throw new NotImplementedException();
+        IEnumerable<EntityEntry<IAuditablePassport>> entries = _context.ChangeTracker.Entries<IAuditablePassport>();
+        var result = new List<PassportDateDTO>();
+        foreach (var entry in entries) {
+            result.Add(new PassportDateDTO(entry.Entity));
+        }
+        return result;
     }
 
     private async Task InsertConflicts() {
@@ -195,11 +200,15 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
     }
 
     protected virtual async Task FillDatabase(List<Passport> passports) {
-        await _context.BulkInsertAsync(passports, options => {
-            options.ColumnPrimaryKeyExpression = x => new { x.Series, x.Number };
-            options.InsertIfNotExists = true;
-        });
-        //await _context.Passports.AddRangeAsync(passports);
-        //await _context.SaveChangesAsync();
+        // await _context.BulkInsertAsync(passports, options => {
+        //     options.ColumnPrimaryKeyExpression = x => new { x.Series, x.Number };
+        //     options.InsertIfNotExists = true;
+        // });
+        try {
+            await _context.Passports.AddRangeAsync(passports);
+        } catch (Exception e) {
+            _context.Passports.UpdateRange(passports);
+        }
+        await _context.SaveChangesAsync();
     }
 }
