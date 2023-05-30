@@ -37,9 +37,9 @@ jobs:
         name: api
         path: src/Passports/bin/Release/net7.0/publish/
     - name: Auto Approve
-      uses: hmarr/auto-approve-action@v2.0.0 
+      uses: hmarr/auto-approve-action@v3
       with:
-        github-token: ${{ secrets.GITHUB_ACTIONS_TOKEN }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Pull Request MergeDelete to dev
       uses: managedkaos/merge-pull-request@v2.2.0
       env:
