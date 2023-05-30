@@ -27,7 +27,7 @@ jobs:
       working-directory: src/Passports/
       run: dotnet restore
     - name: Build
-      working-directory: src/PassportsTests/
+      working-directory: src/Passports/
       run: dotnet build --no-restore
     - name: Test
       working-directory: src/PassportsTests/
