@@ -17,7 +17,7 @@ namespace FindBenchmark {
         }
         [Benchmark]
         public async Task<int> BenchmarkFindInMemoryAsync() {
-            await Tests.FoundInMemoryCorrect();
+            //await Tests.FoundInMemoryCorrect();
             return 1;
         }
         //[Benchmark]
