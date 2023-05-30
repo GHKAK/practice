@@ -39,7 +39,7 @@ jobs:
     - name: Auto Approve
       uses: hmarr/auto-approve-action@v2.0.0 
       with:
-          github-token: ${{ secrets.GITHUB_ACTIONS_TOKEN }}
+        github-token: ${{ secrets.GITHUB_ACTIONS_TOKEN }}
     - name: Pull Request MergeDelete to dev
       uses: managedkaos/merge-pull-request@v2.2.0
       env:
