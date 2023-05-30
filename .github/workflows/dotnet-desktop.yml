@@ -41,12 +41,14 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
         pull-requests: write
+        contents: write
+        repository-projects: write
     needs: upload-artifact
     steps:
     - name: Auto Approve
       uses: hmarr/auto-approve-action@v3.1.0
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ secrets.ADMIN_RIGHTS_TOKEN}}
     - name: Pull Request MergeDelete to dev
       uses: managedkaos/merge-pull-request@v2.2.0
       env:
