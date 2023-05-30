@@ -46,9 +46,10 @@ jobs:
     needs: upload-artifact
     steps:
     - name: Auto Approve
-      uses: hmarr/auto-approve-action@v3.1.0
-      with:
-        github-token: ${{ secrets.ADMIN_RIGHTS_TOKEN}}
+      uses: hmarr/auto-approve-action@v2.0.0 
+      if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+        with:
+          github-token: ${{ secrets.GITHUB_ACTIONS_TOKEN }}
     - name: Pull Request MergeDelete to dev
       uses: managedkaos/merge-pull-request@v2.2.0
       env:
