@@ -26,9 +26,6 @@ jobs:
     - name: Restore dependencies
       working-directory: src/Passports/
       run: dotnet restore
-    - name: Build
-      working-directory: src/Passports/
-      run: dotnet build --no-restore
     - name: Test
       working-directory: src/PassportsTests/
       run: dotnet test --verbosity normal
