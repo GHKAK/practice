@@ -19,6 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
+      contents: read
+      checks: read
+      actions: write
+      packages: read
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
