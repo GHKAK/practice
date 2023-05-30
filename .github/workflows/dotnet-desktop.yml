@@ -48,7 +48,7 @@ jobs:
     - name: Auto Approve
       uses: hmarr/auto-approve-action@v2.0.0 
       if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
-        with:
+      with:
           github-token: ${{ secrets.GITHUB_ACTIONS_TOKEN }}
     - name: Pull Request MergeDelete to dev
       uses: managedkaos/merge-pull-request@v2.2.0
