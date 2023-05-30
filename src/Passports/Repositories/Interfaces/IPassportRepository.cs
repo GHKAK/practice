@@ -6,4 +6,5 @@ public interface IPassportRepository  {
     Task<Passport?> GetBySeriesNumber(short series, int number);
     Task<int> CountActual(bool isActual);
     Task<bool> MigrateFromFile();
+    Task<List<PassportDateDTO>> GetPassportHistory(short series, int number);
 }

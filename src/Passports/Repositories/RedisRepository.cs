@@ -67,4 +67,15 @@ public class RedisRepository : DbRepository {
         await db.StringIncrementAsync(ActiveCountKey, activeCount);
         await db.StringIncrementAsync(UnactiveCountKey,unactiveCount);
     }
+    public override async Task<List<PassportDateDTO>> GetPassportHistory(short series, int number) {
+        var db = _redis.GetDatabase();
+        string key = $"{series}-{number}";
+        var passportValues =  await db.SortedSetRangeByScoreAsync(key);
+        var result = new List<PassportDateDTO>();
+        foreach (var passportValue in passportValues) {
+            var passportHistoryDTO= JsonConvert.DeserializeObject<Passport>(passportValue);
+            result.Add(new PassportDateDTO(passportHistoryDTO));
+        }
+        return result;
+    }
 }

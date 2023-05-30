@@ -3,7 +3,8 @@ using System.Reflection;
 using Passports.Models;
 using Passports.Repositories.Interfaces;
 using Serilog.Core;
-namespace Passports.Repositories; 
+
+namespace Passports.Repositories;
 
 public class LoggingPassportRepository : IPassportRepository {
     private readonly IPassportRepository _decoratedRepository;
@@ -17,22 +18,26 @@ public class LoggingPassportRepository : IPassportRepository {
     }
 
     public async Task<Passport?> GetBySeriesNumber(short series, int number) {
-        return await LogAndExecute(()=>_decoratedRepository.GetBySeriesNumber(series,number),"GetBySeriesNumber");
+        return await LogAndExecute(() => _decoratedRepository.GetBySeriesNumber(series, number), "GetBySeriesNumber");
     }
 
     public async Task<int> CountActual(bool isActual) {
-        return await LogAndExecute(()=>_decoratedRepository.CountActual(isActual),"CountActual");
+        return await LogAndExecute(() => _decoratedRepository.CountActual(isActual), "CountActual");
     }
 
     public async Task<bool> MigrateFromFile() {
-        return await LogAndExecute(_decoratedRepository.MigrateFromFile,"MigrateFromFile");
+        return await LogAndExecute(_decoratedRepository.MigrateFromFile, "MigrateFromFile");
     }
-    private async Task<T> LogAndExecute<T>(Func<Task<T>> method, string methodName)
-    {
+
+    public async Task<List<PassportDateDTO>> GetPassportHistory(short series, int number) {
+        return await LogAndExecute(() => _decoratedRepository.GetPassportHistory(series, number), "GetPassportHistory");
+    }
+
+    private async Task<T> LogAndExecute<T>(Func<Task<T>> method, string methodName) {
         _sw.Restart();
         try {
             var result = await method.Invoke();
-            _sw.Stop();            
+            _sw.Stop();
             _logger.Information($"{methodName} finished in {_sw.Elapsed} seconds");
             return result;
         } catch {

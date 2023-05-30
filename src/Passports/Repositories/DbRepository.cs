@@ -99,6 +99,10 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
         return true;
     }
 
+    public virtual async Task<List<PassportDateDTO>> GetPassportHistory(short series, int number) {
+        throw new NotImplementedException();
+    }
+
     private async Task InsertConflicts() {
         List<Passport> passports = new();
         var prevConflict = ConflictsDictionary.GetValueOrDefault(0);

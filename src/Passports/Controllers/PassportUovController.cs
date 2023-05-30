@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Passports.Repositories;
 using System.Diagnostics;
+using Newtonsoft.Json;
 using Passports.Data;
 using Passports.Repositories.Interfaces;
 
@@ -40,5 +41,15 @@ public class PassportUovController : ControllerBase {
         var countNotActual = await _unitOfWork.Passports.CountActual(false);
         sw.Stop();
         return Ok($"{countActual} active and {countNotActual} unactive passports found in {sw.Elapsed}");
+    }
+
+    [HttpGet("GetPassportHistory")]
+    public async Task<IActionResult> GetPassportHistory(short series, int number) {
+        var passportHistory = await _unitOfWork.Passports.GetPassportHistory(series, number);
+        if (passportHistory.Count != 0) {
+            return Ok(JsonConvert.SerializeObject(passportHistory));
+        } else {
+            return NotFound("This passport doesn't exist in db");
+        }
     }
 }
