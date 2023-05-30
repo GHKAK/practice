@@ -39,6 +39,8 @@ jobs:
         
   merge:
     runs-on: ubuntu-latest
+    permissions:
+        pull-requests: write
     needs: upload-artifact
     steps:
     - name: Approve 
