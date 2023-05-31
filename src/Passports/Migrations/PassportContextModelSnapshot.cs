@@ -22,6 +22,31 @@ namespace Passports.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Passports.Models.AuditPassportEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("ChangeDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsActual")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("Series")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuditPassportEntries");
+                });
+
             modelBuilder.Entity("Passports.Models.Passport", b =>
                 {
                     b.Property<short>("Series")

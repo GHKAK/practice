@@ -16,11 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // builder.Services.AddSingleton<IConnectionMultiplexer>(opt =>
 // ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("redisPassports")));
-builder.Services.AddSingleton<UpdatePassportInterceptor>();
 var x = builder.Configuration.GetConnectionString("postgresPassports");
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PassportContext>((sp, opt) => {
-    var interceptor = sp.GetService<UpdatePassportInterceptor>();
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("postgresPassports")).AddInterceptors(interceptor);
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("postgresPassports"));
     //opt.LogTo(Console.WriteLine);
 });
 

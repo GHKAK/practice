@@ -1,4 +1,6 @@
-﻿using CsvHelper.Configuration.Attributes;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using CsvHelper.Configuration.Attributes;
 
 namespace Passports.Models;
 
@@ -8,9 +10,10 @@ public class Passport : IAuditablePassport {
         Number = number;
         ChangeDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
     }
-
     public short Series { get; set; }
     public int Number { get; set; }
     public bool IsActual { get; set; }
     public DateOnly ChangeDate { get; set; }
+    [NotMapped]
+    public ICollection<AuditPassportEntry> AuditPassportEntries { get; set; }
 }

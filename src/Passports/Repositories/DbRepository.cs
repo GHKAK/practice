@@ -16,7 +16,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
     private Task<(List<Passport>, ConflictStrings)>[] Tasks { get; set; }
     private protected Dictionary<int, ConflictStrings> ConflictsDictionary { get; set; }
     private protected Dictionary<int, int> TasksOrderMap { get; set; }
-    private const int TaskLimit = 10;
+    private const int TaskLimit = 1;
     private MemoryPool _memoryPool;
     private List<List<Passport>> _listPool;
     private List<Memory<byte>> _buffers;
@@ -47,7 +47,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
 
     public virtual async Task<Passport?> GetBySeriesNumber(short series, int number) {
         try {
-            var passports =   await _context.Passports.Where(x=>x.Series==series && x.Number==number).ToListAsync();
+            var passports = await _context.Passports.Where(x => x.Series == series && x.Number == number).ToListAsync();
             return passports.ElementAt(0);
         } catch (Exception e) {
             Console.WriteLine(e);
@@ -56,7 +56,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
     }
 
     public virtual async Task<int> CountActual(bool isActual) {
-        var count = await _context.Passports.CountAsync(x => x.IsActual==isActual);
+        var count = await _context.Passports.CountAsync(x => x.IsActual == isActual);
         return count;
     }
 
@@ -105,6 +105,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
         foreach (var entry in entries) {
             result.Add(new PassportDateDTO(entry.Entity));
         }
+
         return result;
     }
 
@@ -134,6 +135,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
         if (short.TryParse(splitted[0], out series) && int.TryParse(splitted[1], out number)) {
             return new Passport(series, number);
         }
+
         throw new ArgumentException("Not correct data in string");
     }
 
@@ -201,14 +203,10 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
 
     protected virtual async Task FillDatabase(List<Passport> passports) {
         // await _context.BulkInsertAsync(passports, options => {
-        //     options.ColumnPrimaryKeyExpression = x => new { x.Series, x.Number };
+        //     //options.ColumnPrimaryKeyExpression = x => new { x.Series, x.Number };
         //     options.InsertIfNotExists = true;
         // });
-        try {
-            await _context.Passports.AddRangeAsync(passports);
-        } catch (Exception e) {
-            _context.Passports.UpdateRange(passports);
-        }
+        await _context.Passports.AddRangeAsync(passports);
         await _context.SaveChangesAsync();
     }
 }
