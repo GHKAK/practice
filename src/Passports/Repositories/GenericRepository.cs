@@ -6,7 +6,9 @@ using Passports.Repositories.Interfaces;
 namespace Passports.Repositories; 
 
 public class GenericRepository<T> : IGenericRepository<T> where T : class {
+
     private protected PassportContext _context;
+    
     private protected DbSet<T> _dbSet;
     public GenericRepository() {
     }

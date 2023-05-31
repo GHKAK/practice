@@ -48,7 +48,7 @@ public class RedisRepository : DbRepository {
         return result;
     }
 
-    protected override async Task FillDatabase(List<Passport> passports) {
+    protected override async Task FillDatabase(List<Passport> passports, PassportContext passportContext) {
         var db = _redis.GetDatabase();
         var DateString = DateOnly.FromDateTime(DateTime.Now).ToString().Replace("/", "");
         long dateNumber;

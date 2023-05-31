@@ -16,11 +16,11 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
     private Task<(List<Passport>, ConflictStrings)>[] Tasks { get; set; }
     private protected Dictionary<int, ConflictStrings> ConflictsDictionary { get; set; }
     private protected Dictionary<int, int> TasksOrderMap { get; set; }
-    private const int TaskLimit = 1;
+    private const int TaskLimit = 6;
     private MemoryPool _memoryPool;
     private List<List<Passport>> _listPool;
     private List<Memory<byte>> _buffers;
-    private const int ChunkSize = 60000;
+    private const int ChunkSize = 600000;
     private int _readIndex = 0;
 
     public DbRepository(PassportContext context) : base(context) {
@@ -100,12 +100,11 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
     }
 
     public virtual async Task<List<PassportDateDTO>> GetPassportHistory(short series, int number) {
+        var result = await _context.AuditPassportEntries
+            .Select(x=>x)
+            .Where(x=> x.Series==series&&x.Number==number)
+            .Select(x => new PassportDateDTO{isActual = x.IsActual,changeDate = x.ChangeDate }).ToListAsync();
         IEnumerable<EntityEntry<IAuditablePassport>> entries = _context.ChangeTracker.Entries<IAuditablePassport>();
-        var result = new List<PassportDateDTO>();
-        foreach (var entry in entries) {
-            result.Add(new PassportDateDTO(entry.Entity));
-        }
-
         return result;
     }
 
@@ -125,7 +124,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
             prevConflict = nextConflict;
         }
 
-        await FillDatabase(passports);
+        await FillDatabase(passports, _context);
     }
 
     private Passport GetPassportFromString(string passportString) {
@@ -149,7 +148,7 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
     private async Task EndTaskRoutine(int taskIndex) {
         (var passports, var conflict) = Tasks[taskIndex].Result;
         ConflictsDictionary.Add(TasksOrderMap[taskIndex], conflict);
-        await FillDatabase(passports);
+        await FillDatabase(passports, _context);
     }
 
     private async Task ProcessLastTasks(int lastTaskIndex) {
@@ -201,12 +200,12 @@ public class DbRepository : GenericRepository<Passport>, IPassportRepository {
         return (passports, new ConflictStrings(start, end));
     }
 
-    protected virtual async Task FillDatabase(List<Passport> passports) {
-        // await _context.BulkInsertAsync(passports, options => {
-        //     //options.ColumnPrimaryKeyExpression = x => new { x.Series, x.Number };
-        //     options.InsertIfNotExists = true;
-        // });
-        await _context.Passports.AddRangeAsync(passports);
-        await _context.SaveChangesAsync();
+    protected virtual async Task FillDatabase(List<Passport> passports, PassportContext passportContext) {
+        await _context.BulkInsertAsync(passports, options => {
+            options.ColumnPrimaryKeyExpression = x => new { x.Series, x.Number };
+            options.InsertIfNotExists = true;
+        });
+        passportContext.Passports.UpdateRange(passports);
+        await passportContext.SaveChangesAsync();
     }
 }
